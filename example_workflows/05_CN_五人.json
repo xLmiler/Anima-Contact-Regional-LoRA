@@ -1,0 +1,2490 @@
+{
+  "id": "66369876-0918-515c-a9b1-84101c248bc3",
+  "revision": 0,
+  "last_node_id": 40,
+  "last_link_id": 51,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "UNETLoader",
+      "pos": [
+        520,
+        80
+      ],
+      "size": [
+        520,
+        170
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            1
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "UNETLoader"
+      },
+      "widgets_values": [
+        "anima-base-v1.0.safetensors",
+        "default"
+      ],
+      "widgets_values_named": {
+        "unet_name": "anima-base-v1.0.safetensors",
+        "weight_dtype": "default"
+      }
+    },
+    {
+      "id": 2,
+      "type": "ModelSamplingAuraFlow",
+      "pos": [
+        520,
+        430
+      ],
+      "size": [
+        520,
+        170
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 1
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            30
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ModelSamplingAuraFlow"
+      },
+      "widgets_values": [
+        3.0
+      ],
+      "widgets_values_named": {
+        "shift": 3.0
+      }
+    },
+    {
+      "id": 3,
+      "type": "CLIPLoader",
+      "pos": [
+        1100,
+        80
+      ],
+      "size": [
+        520,
+        184
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "CLIP",
+          "type": "CLIP",
+          "links": [
+            2,
+            6,
+            10,
+            15,
+            20,
+            25
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CLIPLoader"
+      },
+      "widgets_values": [
+        "qwen_3_06b_base.safetensors",
+        "stable_diffusion",
+        "default"
+      ],
+      "widgets_values_named": {
+        "clip_name": "qwen_3_06b_base.safetensors",
+        "type": "stable_diffusion",
+        "device": "default"
+      }
+    },
+    {
+      "id": 4,
+      "type": "VAELoader",
+      "pos": [
+        1100,
+        430
+      ],
+      "size": [
+        520,
+        170
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "links": [
+            46
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAELoader"
+      },
+      "widgets_values": [
+        "qwen_image_vae.safetensors"
+      ],
+      "widgets_values_named": {
+        "vae_name": "qwen_image_vae.safetensors"
+      }
+    },
+    {
+      "id": 5,
+      "type": "AnimaSceneConditioning",
+      "pos": [
+        520,
+        950
+      ],
+      "size": [
+        520,
+        184
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 2
+        }
+      ],
+      "outputs": [
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "links": [
+            42
+          ],
+          "slot_index": 0
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "links": [
+            43
+          ],
+          "slot_index": 1
+        },
+        {
+          "name": "scene_text",
+          "type": "STRING",
+          "links": [
+            8,
+            12,
+            17,
+            22,
+            27
+          ],
+          "slot_index": 2
+        },
+        {
+          "name": "scene_policy",
+          "type": "ANIMA_SCENE_POLICY",
+          "links": [
+            9,
+            13,
+            18,
+            23,
+            28
+          ],
+          "slot_index": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "AnimaSceneConditioning",
+        "animaWidgetState": {
+          "version": 1,
+          "type": "AnimaSceneConditioning",
+          "values": {
+            "scene_prompt": "5girls, multiple girls, group portrait, standing in staggered rows, waving, raised hands, looking at viewer, white background",
+            "quality_prompt": "",
+            "negative_prompt": "worst quality, low quality, bad anatomy, extra limbs, fused bodies"
+          }
+        },
+        "DocsGroup": 1
+      },
+      "widgets_values": [
+        "5girls, multiple girls, group portrait, standing in staggered rows, waving, raised hands, looking at viewer, white background",
+        "",
+        "worst quality, low quality, bad anatomy, extra limbs, fused bodies"
+      ],
+      "widgets_values_named": {
+        "scene_prompt": "5girls, multiple girls, group portrait, standing in staggered rows, waving, raised hands, looking at viewer, white background",
+        "quality_prompt": "",
+        "negative_prompt": "worst quality, low quality, bad anatomy, extra limbs, fused bodies"
+      }
+    },
+    {
+      "id": 6,
+      "type": "LoadImage",
+      "pos": [
+        2420,
+        100
+      ],
+      "size": [
+        520,
+        170
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            3
+          ],
+          "slot_index": 0
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": [],
+          "slot_index": 1
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "",
+        "image"
+      ],
+      "widgets_values_named": {
+        "image": "",
+        "upload": "image"
+      }
+    },
+    {
+      "id": 7,
+      "type": "AnimaContactSAM3Segment",
+      "pos": [
+        3000,
+        100
+      ],
+      "size": [
+        520,
+        436
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "layout",
+          "type": "ANIMA_LAYOUT",
+          "links": [
+            4
+          ],
+          "slot_index": 0
+        },
+        {
+          "name": "overlay",
+          "type": "IMAGE",
+          "links": [
+            5
+          ],
+          "slot_index": 1
+        },
+        {
+          "name": "identity_map",
+          "type": "IMAGE",
+          "links": [],
+          "slot_index": 2
+        },
+        {
+          "name": "foreground",
+          "type": "MASK",
+          "links": [],
+          "slot_index": 3
+        },
+        {
+          "name": "count",
+          "type": "INT",
+          "links": [],
+          "slot_index": 4
+        },
+        {
+          "name": "report",
+          "type": "STRING",
+          "links": [],
+          "slot_index": 5
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "AnimaContactSAM3Segment",
+        "animaWidgetState": {
+          "version": 1,
+          "type": "AnimaContactSAM3Segment",
+          "values": {
+            "semantic_mode": "automatic",
+            "semantic_text": "",
+            "expected_people": 5,
+            "confidence": 0.5,
+            "mask_threshold": 0.5,
+            "nms_iou": 0.85,
+            "minimum_pixels": 24,
+            "canvas_width": 1536,
+            "canvas_height": 1024,
+            "contact_width": 8,
+            "device": "auto",
+            "auto_download": true
+          }
+        },
+        "DocsGroup": 2
+      },
+      "widgets_values": [
+        "automatic",
+        "",
+        5,
+        0.5,
+        0.5,
+        0.85,
+        24,
+        1536,
+        1024,
+        8,
+        "auto",
+        true
+      ],
+      "widgets_values_named": {
+        "semantic_mode": "automatic",
+        "semantic_text": "",
+        "expected_people": 5,
+        "confidence": 0.5,
+        "mask_threshold": 0.5,
+        "nms_iou": 0.85,
+        "minimum_pixels": 24,
+        "canvas_width": 1536,
+        "canvas_height": 1024,
+        "contact_width": 8,
+        "device": "auto",
+        "auto_download": true
+      }
+    },
+    {
+      "id": 8,
+      "type": "AnimaOwnershipEditor",
+      "pos": [
+        3000,
+        1050
+      ],
+      "size": [
+        520,
+        850
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "layout",
+          "type": "ANIMA_LAYOUT",
+          "link": 4
+        }
+      ],
+      "outputs": [
+        {
+          "name": "layout",
+          "type": "ANIMA_LAYOUT",
+          "links": [
+            7,
+            11,
+            16,
+            21,
+            26,
+            32,
+            33
+          ],
+          "slot_index": 0
+        },
+        {
+          "name": "preview",
+          "type": "IMAGE",
+          "links": [],
+          "slot_index": 1
+        },
+        {
+          "name": "identity_map",
+          "type": "IMAGE",
+          "links": [],
+          "slot_index": 2
+        },
+        {
+          "name": "report",
+          "type": "STRING",
+          "links": [],
+          "slot_index": 3
+        },
+        {
+          "name": "width",
+          "type": "INT",
+          "links": [
+            39
+          ],
+          "slot_index": 4
+        },
+        {
+          "name": "height",
+          "type": "INT",
+          "links": [
+            40
+          ],
+          "slot_index": 5
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "AnimaOwnershipEditor",
+        "animaWidgetState": {
+          "version": 1,
+          "type": "AnimaOwnershipEditor",
+          "values": {
+            "strokes_json": "{\"version\":1,\"strokes\":[]}",
+            "island_pixels": 24,
+            "hole_pixels": 256,
+            "smooth_radius": 0.6,
+            "identity_names_json": "{}"
+          }
+        },
+        "DocsGroup": 2
+      },
+      "widgets_values": [
+        "{\"version\":1,\"strokes\":[]}",
+        24,
+        256,
+        0.6,
+        "{}"
+      ],
+      "widgets_values_named": {
+        "strokes_json": "{\"version\":1,\"strokes\":[]}",
+        "island_pixels": 24,
+        "hole_pixels": 256,
+        "smooth_radius": 0.6,
+        "identity_names_json": "{}"
+      }
+    },
+    {
+      "id": 9,
+      "type": "PreviewImage",
+      "pos": [
+        2420,
+        900
+      ],
+      "size": [
+        520,
+        170
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 5
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": [],
+      "widgets_values_named": {}
+    },
+    {
+      "id": 10,
+      "type": "Note",
+      "pos": [
+        2420,
+        1700
+      ],
+      "size": [
+        520,
+        280
+      ],
+      "flags": {},
+      "mode": 0,
+      "order": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "参考图与语义分割",
+      "properties": {},
+      "widgets_values": [
+        "将对应人数的真实人物参考图拖入加载图像。自动语义探测人物；需要限制目标时改为自定义语义并填写简短英语概念。运行后核对归属预览与图例，再调整身份条件。\nexamples/reference_guides 内 PNG 是动作几何示意，不是语义模型识别精度样本。"
+      ]
+    },
+    {
+      "id": 11,
+      "type": "AnimaIdentity",
+      "pos": [
+        4370,
+        100
+      ],
+      "size": [
+        520,
+        850
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 6
+        },
+        {
+          "name": "layout",
+          "type": "ANIMA_LAYOUT",
+          "link": 7
+        },
+        {
+          "name": "scene_text",
+          "type": "STRING",
+          "link": 8
+        },
+        {
+          "name": "previous_roles",
+          "type": "ANIMA_IDENTITIES",
+          "link": null
+        },
+        {
+          "name": "scene_policy",
+          "type": "ANIMA_SCENE_POLICY",
+          "link": 9
+        }
+      ],
+      "outputs": [
+        {
+          "name": "roles",
+          "type": "ANIMA_IDENTITIES",
+          "links": [
+            14
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "AnimaIdentity",
+        "animaWidgetState": {
+          "version": 1,
+          "type": "AnimaIdentity",
+          "values": {
+            "char_id": "char1",
+            "identity_prompt": "blue hair, short hair, blue eyes, simple dress",
+            "edge_softness": 0,
+            "identity_gain": 1.0,
+            "self_q_out_gain": 1.0,
+            "self_kv_gain": 1.0,
+            "cross_gain": 1.0,
+            "mlp_gain": 1.0,
+            "lora_stack_json": "{\"version\":1,\"entries\":[]}"
+          }
+        },
+        "DocsGroup": 3
+      },
+      "widgets_values": [
+        "char1",
+        "blue hair, short hair, blue eyes, simple dress",
+        0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        "{\"version\":1,\"entries\":[]}"
+      ],
+      "widgets_values_named": {
+        "char_id": "char1",
+        "identity_prompt": "blue hair, short hair, blue eyes, simple dress",
+        "edge_softness": 0,
+        "identity_gain": 1.0,
+        "self_q_out_gain": 1.0,
+        "self_kv_gain": 1.0,
+        "cross_gain": 1.0,
+        "mlp_gain": 1.0,
+        "lora_stack_json": "{\"version\":1,\"entries\":[]}"
+      }
+    },
+    {
+      "id": 12,
+      "type": "AnimaIdentity",
+      "pos": [
+        4370,
+        1150
+      ],
+      "size": [
+        520,
+        850
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 10
+        },
+        {
+          "name": "layout",
+          "type": "ANIMA_LAYOUT",
+          "link": 11
+        },
+        {
+          "name": "scene_text",
+          "type": "STRING",
+          "link": 12
+        },
+        {
+          "name": "previous_roles",
+          "type": "ANIMA_IDENTITIES",
+          "link": 14
+        },
+        {
+          "name": "scene_policy",
+          "type": "ANIMA_SCENE_POLICY",
+          "link": 13
+        }
+      ],
+      "outputs": [
+        {
+          "name": "roles",
+          "type": "ANIMA_IDENTITIES",
+          "links": [
+            19
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "AnimaIdentity",
+        "animaWidgetState": {
+          "version": 1,
+          "type": "AnimaIdentity",
+          "values": {
+            "char_id": "char2",
+            "identity_prompt": "orange hair, long hair, brown eyes, simple dress",
+            "edge_softness": 0,
+            "identity_gain": 1.0,
+            "self_q_out_gain": 1.0,
+            "self_kv_gain": 1.0,
+            "cross_gain": 1.0,
+            "mlp_gain": 1.0,
+            "lora_stack_json": "{\"version\":1,\"entries\":[]}"
+          }
+        },
+        "DocsGroup": 3
+      },
+      "widgets_values": [
+        "char2",
+        "orange hair, long hair, brown eyes, simple dress",
+        0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        "{\"version\":1,\"entries\":[]}"
+      ],
+      "widgets_values_named": {
+        "char_id": "char2",
+        "identity_prompt": "orange hair, long hair, brown eyes, simple dress",
+        "edge_softness": 0,
+        "identity_gain": 1.0,
+        "self_q_out_gain": 1.0,
+        "self_kv_gain": 1.0,
+        "cross_gain": 1.0,
+        "mlp_gain": 1.0,
+        "lora_stack_json": "{\"version\":1,\"entries\":[]}"
+      }
+    },
+    {
+      "id": 13,
+      "type": "AnimaIdentity",
+      "pos": [
+        4370,
+        2200
+      ],
+      "size": [
+        520,
+        850
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 15
+        },
+        {
+          "name": "layout",
+          "type": "ANIMA_LAYOUT",
+          "link": 16
+        },
+        {
+          "name": "scene_text",
+          "type": "STRING",
+          "link": 17
+        },
+        {
+          "name": "previous_roles",
+          "type": "ANIMA_IDENTITIES",
+          "link": 19
+        },
+        {
+          "name": "scene_policy",
+          "type": "ANIMA_SCENE_POLICY",
+          "link": 18
+        }
+      ],
+      "outputs": [
+        {
+          "name": "roles",
+          "type": "ANIMA_IDENTITIES",
+          "links": [
+            24
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "AnimaIdentity",
+        "animaWidgetState": {
+          "version": 1,
+          "type": "AnimaIdentity",
+          "values": {
+            "char_id": "char3",
+            "identity_prompt": "green hair, bob cut, green eyes, simple dress",
+            "edge_softness": 0,
+            "identity_gain": 1.0,
+            "self_q_out_gain": 1.0,
+            "self_kv_gain": 1.0,
+            "cross_gain": 1.0,
+            "mlp_gain": 1.0,
+            "lora_stack_json": "{\"version\":1,\"entries\":[]}"
+          }
+        },
+        "DocsGroup": 3
+      },
+      "widgets_values": [
+        "char3",
+        "green hair, bob cut, green eyes, simple dress",
+        0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        "{\"version\":1,\"entries\":[]}"
+      ],
+      "widgets_values_named": {
+        "char_id": "char3",
+        "identity_prompt": "green hair, bob cut, green eyes, simple dress",
+        "edge_softness": 0,
+        "identity_gain": 1.0,
+        "self_q_out_gain": 1.0,
+        "self_kv_gain": 1.0,
+        "cross_gain": 1.0,
+        "mlp_gain": 1.0,
+        "lora_stack_json": "{\"version\":1,\"entries\":[]}"
+      }
+    },
+    {
+      "id": 14,
+      "type": "AnimaIdentity",
+      "pos": [
+        4370,
+        3250
+      ],
+      "size": [
+        520,
+        850
+      ],
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 20
+        },
+        {
+          "name": "layout",
+          "type": "ANIMA_LAYOUT",
+          "link": 21
+        },
+        {
+          "name": "scene_text",
+          "type": "STRING",
+          "link": 22
+        },
+        {
+          "name": "previous_roles",
+          "type": "ANIMA_IDENTITIES",
+          "link": 24
+        },
+        {
+          "name": "scene_policy",
+          "type": "ANIMA_SCENE_POLICY",
+          "link": 23
+        }
+      ],
+      "outputs": [
+        {
+          "name": "roles",
+          "type": "ANIMA_IDENTITIES",
+          "links": [
+            29
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "AnimaIdentity",
+        "animaWidgetState": {
+          "version": 1,
+          "type": "AnimaIdentity",
+          "values": {
+            "char_id": "char4",
+            "identity_prompt": "pink hair, ponytail, violet eyes, simple dress",
+            "edge_softness": 0,
+            "identity_gain": 1.0,
+            "self_q_out_gain": 1.0,
+            "self_kv_gain": 1.0,
+            "cross_gain": 1.0,
+            "mlp_gain": 1.0,
+            "lora_stack_json": "{\"version\":1,\"entries\":[]}"
+          }
+        },
+        "DocsGroup": 3
+      },
+      "widgets_values": [
+        "char4",
+        "pink hair, ponytail, violet eyes, simple dress",
+        0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        "{\"version\":1,\"entries\":[]}"
+      ],
+      "widgets_values_named": {
+        "char_id": "char4",
+        "identity_prompt": "pink hair, ponytail, violet eyes, simple dress",
+        "edge_softness": 0,
+        "identity_gain": 1.0,
+        "self_q_out_gain": 1.0,
+        "self_kv_gain": 1.0,
+        "cross_gain": 1.0,
+        "mlp_gain": 1.0,
+        "lora_stack_json": "{\"version\":1,\"entries\":[]}"
+      }
+    },
+    {
+      "id": 15,
+      "type": "AnimaIdentity",
+      "pos": [
+        4370,
+        4300
+      ],
+      "size": [
+        520,
+        850
+      ],
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 25
+        },
+        {
+          "name": "layout",
+          "type": "ANIMA_LAYOUT",
+          "link": 26
+        },
+        {
+          "name": "scene_text",
+          "type": "STRING",
+          "link": 27
+        },
+        {
+          "name": "previous_roles",
+          "type": "ANIMA_IDENTITIES",
+          "link": 29
+        },
+        {
+          "name": "scene_policy",
+          "type": "ANIMA_SCENE_POLICY",
+          "link": 28
+        }
+      ],
+      "outputs": [
+        {
+          "name": "roles",
+          "type": "ANIMA_IDENTITIES",
+          "links": [
+            31
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "AnimaIdentity",
+        "animaWidgetState": {
+          "version": 1,
+          "type": "AnimaIdentity",
+          "values": {
+            "char_id": "char5",
+            "identity_prompt": "purple hair, long hair, purple eyes, simple dress",
+            "edge_softness": 0,
+            "identity_gain": 1.0,
+            "self_q_out_gain": 1.0,
+            "self_kv_gain": 1.0,
+            "cross_gain": 1.0,
+            "mlp_gain": 1.0,
+            "lora_stack_json": "{\"version\":1,\"entries\":[]}"
+          }
+        },
+        "DocsGroup": 3
+      },
+      "widgets_values": [
+        "char5",
+        "purple hair, long hair, purple eyes, simple dress",
+        0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        "{\"version\":1,\"entries\":[]}"
+      ],
+      "widgets_values_named": {
+        "char_id": "char5",
+        "identity_prompt": "purple hair, long hair, purple eyes, simple dress",
+        "edge_softness": 0,
+        "identity_gain": 1.0,
+        "self_q_out_gain": 1.0,
+        "self_kv_gain": 1.0,
+        "cross_gain": 1.0,
+        "mlp_gain": 1.0,
+        "lora_stack_json": "{\"version\":1,\"entries\":[]}"
+      }
+    },
+    {
+      "id": 16,
+      "type": "AnimaRegionalApply",
+      "pos": [
+        5770,
+        100
+      ],
+      "size": [
+        520,
+        464
+      ],
+      "flags": {},
+      "order": 16,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 30
+        },
+        {
+          "name": "layout",
+          "type": "ANIMA_LAYOUT",
+          "link": 32
+        },
+        {
+          "name": "roles",
+          "type": "ANIMA_IDENTITIES",
+          "link": 31
+        }
+      ],
+      "outputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "links": [],
+          "slot_index": 0
+        },
+        {
+          "name": "pipeline",
+          "type": "ANIMA_PIPELINE",
+          "links": [
+            34
+          ],
+          "slot_index": 1
+        },
+        {
+          "name": "report",
+          "type": "STRING",
+          "links": [],
+          "slot_index": 2
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "AnimaRegionalApply",
+        "animaWidgetState": {
+          "version": 1,
+          "type": "AnimaRegionalApply",
+          "values": {
+            "identity_strength": 1.0,
+            "cross_lora_strength": 1.0,
+            "self_kv_mode": "regional",
+            "overlap_mode": "nearest",
+            "contact_lora_release": 0.0,
+            "adaptive_mode": "off",
+            "adaptive_calls": 2,
+            "adaptive_blend": 0.25,
+            "self_attention_mode": "local_output",
+            "cfg_lora_mode": "both",
+            "gate_mode": "partition",
+            "self_region_isolation": 0.0,
+            "isolation_start_layer": 0.5
+          }
+        },
+        "DocsGroup": 4
+      },
+      "widgets_values": [
+        1.0,
+        1.0,
+        "regional",
+        "nearest",
+        0.0,
+        "off",
+        2,
+        0.25,
+        "local_output",
+        "both",
+        "partition",
+        0.0,
+        0.5
+      ],
+      "widgets_values_named": {
+        "identity_strength": 1.0,
+        "cross_lora_strength": 1.0,
+        "self_kv_mode": "regional",
+        "overlap_mode": "nearest",
+        "contact_lora_release": 0.0,
+        "adaptive_mode": "off",
+        "adaptive_calls": 2,
+        "adaptive_blend": 0.25,
+        "self_attention_mode": "local_output",
+        "cfg_lora_mode": "both",
+        "gate_mode": "partition",
+        "self_region_isolation": 0.0,
+        "isolation_start_layer": 0.5
+      }
+    },
+    {
+      "id": 17,
+      "type": "AnimaLayoutControl",
+      "pos": [
+        5770,
+        1150
+      ],
+      "size": [
+        520,
+        212
+      ],
+      "flags": {},
+      "order": 17,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "layout",
+          "type": "ANIMA_LAYOUT",
+          "link": 33
+        },
+        {
+          "name": "release_mask",
+          "type": "MASK",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "control_image",
+          "type": "IMAGE",
+          "links": [
+            36,
+            38
+          ],
+          "slot_index": 0
+        },
+        {
+          "name": "effect_mask",
+          "type": "MASK",
+          "links": [
+            37
+          ],
+          "slot_index": 1
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "AnimaLayoutControl",
+        "animaWidgetState": {
+          "version": 1,
+          "type": "AnimaLayoutControl",
+          "values": {
+            "mode": "outline",
+            "smooth_pixels": 2,
+            "line_width": 3,
+            "effect_margin": 16
+          }
+        },
+        "DocsGroup": 4
+      },
+      "widgets_values": [
+        "outline",
+        2,
+        3,
+        16
+      ],
+      "widgets_values_named": {
+        "mode": "outline",
+        "smooth_pixels": 2,
+        "line_width": 3,
+        "effect_margin": 16
+      }
+    },
+    {
+      "id": 18,
+      "type": "AnimaLLLiteLoader",
+      "pos": [
+        6350,
+        1150
+      ],
+      "size": [
+        520,
+        170
+      ],
+      "flags": {},
+      "order": 18,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "control",
+          "type": "ANIMA_LLLITE",
+          "links": [
+            35
+          ],
+          "slot_index": 0
+        },
+        {
+          "name": "report",
+          "type": "STRING",
+          "links": [],
+          "slot_index": 1
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "AnimaLLLiteLoader",
+        "animaWidgetState": {
+          "version": 1,
+          "type": "AnimaLLLiteLoader",
+          "values": {
+            "model_name": "outline",
+            "auto_download": true
+          }
+        },
+        "DocsGroup": 4
+      },
+      "widgets_values": [
+        "outline",
+        true
+      ],
+      "widgets_values_named": {
+        "model_name": "outline",
+        "auto_download": true
+      }
+    },
+    {
+      "id": 19,
+      "type": "AnimaContactLLLiteApply",
+      "pos": [
+        6350,
+        100
+      ],
+      "size": [
+        520,
+        240
+      ],
+      "flags": {},
+      "order": 19,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "pipeline",
+          "type": "ANIMA_PIPELINE",
+          "link": 34
+        },
+        {
+          "name": "control",
+          "type": "ANIMA_LLLITE",
+          "link": 35
+        },
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 36
+        },
+        {
+          "name": "effect_mask",
+          "type": "MASK",
+          "link": 37
+        }
+      ],
+      "outputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "links": [
+            41
+          ],
+          "slot_index": 0
+        },
+        {
+          "name": "pipeline",
+          "type": "ANIMA_PIPELINE",
+          "links": [
+            48
+          ],
+          "slot_index": 1
+        },
+        {
+          "name": "report",
+          "type": "STRING",
+          "links": [],
+          "slot_index": 2
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "AnimaContactLLLiteApply",
+        "animaWidgetState": {
+          "version": 1,
+          "type": "AnimaContactLLLiteApply",
+          "values": {
+            "strength": 0.65,
+            "start_percent": 0.0,
+            "end_percent": 0.55,
+            "fade_out": 0.15,
+            "second_pass_strength": 0.0
+          }
+        },
+        "DocsGroup": 4
+      },
+      "widgets_values": [
+        0.65,
+        0.0,
+        0.55,
+        0.15,
+        0.0
+      ],
+      "widgets_values_named": {
+        "strength": 0.65,
+        "start_percent": 0.0,
+        "end_percent": 0.55,
+        "fade_out": 0.15,
+        "second_pass_strength": 0.0
+      }
+    },
+    {
+      "id": 20,
+      "type": "PreviewImage",
+      "pos": [
+        6350,
+        1800
+      ],
+      "size": [
+        520,
+        170
+      ],
+      "flags": {},
+      "order": 20,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 38
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": [],
+      "widgets_values_named": {}
+    },
+    {
+      "id": 21,
+      "type": "EmptyLatentImage",
+      "pos": [
+        7720,
+        100
+      ],
+      "size": [
+        520,
+        184
+      ],
+      "flags": {},
+      "order": 21,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "width",
+          "type": "INT",
+          "widget": {
+            "name": "width"
+          },
+          "link": 39
+        },
+        {
+          "name": "height",
+          "type": "INT",
+          "widget": {
+            "name": "height"
+          },
+          "link": 40
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            44
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "EmptyLatentImage"
+      },
+      "widgets_values": [
+        1536,
+        1024,
+        1
+      ],
+      "widgets_values_named": {
+        "width": 1536,
+        "height": 1024,
+        "batch_size": 1
+      }
+    },
+    {
+      "id": 22,
+      "type": "KSampler",
+      "pos": [
+        8300,
+        100
+      ],
+      "size": [
+        520,
+        296
+      ],
+      "flags": {},
+      "order": 22,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 41
+        },
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 42
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 43
+        },
+        {
+          "name": "latent_image",
+          "type": "LATENT",
+          "link": 44
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            45,
+            49
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "KSampler"
+      },
+      "widgets_values": [
+        813579,
+        "fixed",
+        28,
+        4.0,
+        "euler",
+        "normal",
+        1.0
+      ],
+      "widgets_values_named": {
+        "seed": 813579,
+        "control_after_generate": "fixed",
+        "steps": 28,
+        "cfg": 4.0,
+        "sampler_name": "euler",
+        "scheduler": "normal",
+        "denoise": 1.0
+      }
+    },
+    {
+      "id": 23,
+      "type": "VAEDecode",
+      "pos": [
+        7720,
+        850
+      ],
+      "size": [
+        520,
+        170
+      ],
+      "flags": {},
+      "order": 23,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 45
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 46
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            47,
+            50
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAEDecode"
+      },
+      "widgets_values": [],
+      "widgets_values_named": {}
+    },
+    {
+      "id": 24,
+      "type": "SaveImage",
+      "pos": [
+        8300,
+        850
+      ],
+      "size": [
+        520,
+        170
+      ],
+      "flags": {},
+      "order": 24,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 47
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "SaveImage"
+      },
+      "widgets_values": [
+        "AnimaContact"
+      ],
+      "widgets_values_named": {
+        "filename_prefix": "AnimaContact"
+      }
+    },
+    {
+      "id": 25,
+      "type": "AnimaRegionalInspect",
+      "pos": [
+        7720,
+        1400
+      ],
+      "size": [
+        520,
+        170
+      ],
+      "flags": {},
+      "order": 25,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "pipeline",
+          "type": "ANIMA_PIPELINE",
+          "link": 48
+        },
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 49
+        },
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 50
+        }
+      ],
+      "outputs": [
+        {
+          "name": "preview",
+          "type": "IMAGE",
+          "links": [
+            51
+          ],
+          "slot_index": 0
+        },
+        {
+          "name": "report",
+          "type": "STRING",
+          "links": [],
+          "slot_index": 1
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "AnimaRegionalInspect",
+        "animaWidgetState": {
+          "version": 1,
+          "type": "AnimaRegionalInspect",
+          "values": {}
+        },
+        "DocsGroup": 5
+      },
+      "widgets_values": [],
+      "widgets_values_named": {}
+    },
+    {
+      "id": 26,
+      "type": "PreviewImage",
+      "pos": [
+        8300,
+        1400
+      ],
+      "size": [
+        520,
+        170
+      ],
+      "flags": {},
+      "order": 26,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 51
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": [],
+      "widgets_values_named": {}
+    },
+    {
+      "id": 27,
+      "type": "Note",
+      "pos": [
+        20,
+        950
+      ],
+      "size": [
+        460,
+        300
+      ],
+      "flags": {},
+      "mode": 0,
+      "order": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "Anima 场景条件",
+      "properties": {
+        "DocsFor": 5
+      },
+      "widgets_values": [
+        "编码共享场景、全局画风与负面条件。\n\n文本编码器：用于编码共享和区域条件的 Anima 兼容文本编码器。\n\n共享场景：由所有身份共享的构图、交互、环境和镜头条件。\n\n全局画风与质量：作用于全局基线并与身份残差分离的画风和质量条件。\n\n负面条件：用于无分类器引导的全局负面条件。"
+      ]
+    },
+    {
+      "id": 28,
+      "type": "Note",
+      "pos": [
+        1920,
+        100
+      ],
+      "size": [
+        460,
+        300
+      ],
+      "flags": {},
+      "mode": 0,
+      "order": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "Anima SAM3 语义分割",
+      "properties": {
+        "DocsFor": 7
+      },
+      "widgets_values": [
+        "通过概念短语分割全部匹配实例，保留预测掩码，对重复查询去重并按空间顺序分配稳定归属标识。\n\n参考图像：根据概念提示进行分割的单张 RGB 图像。\n\n语义模式：自动模式依次探测 person、girl、boy 并对实例掩码去重；自定义模式使用输入短语。这是概念探测，不是自动图像描述。\n\n语义短语：自定义模式使用的简短概念短语，每行一条；每条短语可以返回多个实例。\n\n预期实例数：0 接受实际数量；正数核对结果数量，不虚构或截断实例。\n\n实例置信阈值：SAM3 目标存在性与检测评分计算后的最低实例置信度。\n\n掩码阈值：官方实例后处理用于区分前景的概率阈值。\n\n重复掩码 IoU：跨语义查询抑制重复实例的掩码 IoU 阈值；较大数值保留更多重叠目标。\n\n最小实例像素：移除在原图中像素数小于此值的实例掩码。\n\n画布宽度：布局输出宽度，须为 16 的倍数；保持参考图比例可避免拉伸。\n\n画布高度：布局输出高度，须为 16 的倍数。\n\n接触带宽度：以目标画布像素计算的边界接触半径，不改变预测的实例轮廓。\n\n运行设备：自动模式跟随 ComfyUI 设备；CPU 使用 float32，CUDA 使用 float16；推理结束后释放模型。\n\n自动下载：从公开的 bodhicitta/sam3 仓库下载固定修订的 Transformers 权重与配置，并核对上游一致的校验值；无需 Hugging Face 登录。"
+      ]
+    },
+    {
+      "id": 29,
+      "type": "Note",
+      "pos": [
+        1920,
+        1050
+      ],
+      "size": [
+        460,
+        300
+      ],
+      "flags": {},
+      "mode": 0,
+      "order": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "Anima 归属编辑器",
+      "properties": {
+        "DocsFor": 8
+      },
+      "widgets_values": [
+        "清理离散归属标签，并通过持久化笔画编辑身份分配。\n\n归属布局：包含空间归属遮罩、区域标识和接触边界的数据。\n\n归属笔画：与当前参考布局绑定的归一化画笔笔画序列化数据。\n\n孤岛面积阈值：作为孤立噪点移除的最大连通块面积；每个身份的最大连通块保留。\n\n封闭孔洞面积阈值：周围身份归属足够明确时允许填补的封闭背景区域最大面积。\n\n标签平滑半径：用于互斥身份标签竞争的高斯半径，单位为目标像素。\n\n身份名称：可选的区域标识与显示名称映射；名称不改变空间归属。"
+      ]
+    },
+    {
+      "id": 30,
+      "type": "Note",
+      "pos": [
+        3870,
+        100
+      ],
+      "size": [
+        460,
+        300
+      ],
+      "flags": {},
+      "mode": 0,
+      "order": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "Anima 身份条件",
+      "properties": {
+        "DocsFor": 11
+      },
+      "widgets_values": [
+        "将区域文本和可选局部 MODEL 适配器绑定到归属标识。\n\n文本编码器：用于编码共享和区域条件的 Anima 兼容文本编码器。\n\n归属布局：包含空间归属遮罩、区域标识和接触边界的数据。\n\n共享场景文本：与每个身份描述共同编码的共享语义上下文。\n\n区域标识：将身份条件分支与归属区域关联的标识，与显示名称无关。\n\n身份条件：单个区域条件分支的外观、服装和辨识属性。\n\nToken羽化半径：以模型图像 token 为单位的归属门控平滑半径；增大后边界特异性降低。\n\n身份文本增益：当前身份条件残差的倍率，与 LoRA 倍率相互独立。\n\n自注意力Q与输出增益：局部 LoRA 在自注意力查询和输出投影上的增量倍率。\n\n自注意力K/V增益：局部 LoRA 在自注意力键和值投影上的增量倍率。\n\n交叉注意力增益：当前身份受支持交叉注意力 LoRA 增量的倍率。\n\nMLP增益：局部 LoRA 在受支持前馈网络投影上的增量倍率。\n\n局部LoRA组：包含独立开关和倍率的局部 MODEL 适配器序列化数据；空组使用底模。\n\n前序身份：由此节点扩展的可选身份链。\n\n场景基线策略：用于一致计算身份残差的共享无画风参考条件。"
+      ]
+    },
+    {
+      "id": 31,
+      "type": "Note",
+      "pos": [
+        3870,
+        1150
+      ],
+      "size": [
+        460,
+        300
+      ],
+      "flags": {},
+      "mode": 0,
+      "order": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "Anima 身份条件",
+      "properties": {
+        "DocsFor": 12
+      },
+      "widgets_values": [
+        "将区域文本和可选局部 MODEL 适配器绑定到归属标识。\n\n文本编码器：用于编码共享和区域条件的 Anima 兼容文本编码器。\n\n归属布局：包含空间归属遮罩、区域标识和接触边界的数据。\n\n共享场景文本：与每个身份描述共同编码的共享语义上下文。\n\n区域标识：将身份条件分支与归属区域关联的标识，与显示名称无关。\n\n身份条件：单个区域条件分支的外观、服装和辨识属性。\n\nToken羽化半径：以模型图像 token 为单位的归属门控平滑半径；增大后边界特异性降低。\n\n身份文本增益：当前身份条件残差的倍率，与 LoRA 倍率相互独立。\n\n自注意力Q与输出增益：局部 LoRA 在自注意力查询和输出投影上的增量倍率。\n\n自注意力K/V增益：局部 LoRA 在自注意力键和值投影上的增量倍率。\n\n交叉注意力增益：当前身份受支持交叉注意力 LoRA 增量的倍率。\n\nMLP增益：局部 LoRA 在受支持前馈网络投影上的增量倍率。\n\n局部LoRA组：包含独立开关和倍率的局部 MODEL 适配器序列化数据；空组使用底模。\n\n前序身份：由此节点扩展的可选身份链。\n\n场景基线策略：用于一致计算身份残差的共享无画风参考条件。"
+      ]
+    },
+    {
+      "id": 32,
+      "type": "Note",
+      "pos": [
+        3870,
+        2200
+      ],
+      "size": [
+        460,
+        300
+      ],
+      "flags": {},
+      "mode": 0,
+      "order": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "Anima 身份条件",
+      "properties": {
+        "DocsFor": 13
+      },
+      "widgets_values": [
+        "将区域文本和可选局部 MODEL 适配器绑定到归属标识。\n\n文本编码器：用于编码共享和区域条件的 Anima 兼容文本编码器。\n\n归属布局：包含空间归属遮罩、区域标识和接触边界的数据。\n\n共享场景文本：与每个身份描述共同编码的共享语义上下文。\n\n区域标识：将身份条件分支与归属区域关联的标识，与显示名称无关。\n\n身份条件：单个区域条件分支的外观、服装和辨识属性。\n\nToken羽化半径：以模型图像 token 为单位的归属门控平滑半径；增大后边界特异性降低。\n\n身份文本增益：当前身份条件残差的倍率，与 LoRA 倍率相互独立。\n\n自注意力Q与输出增益：局部 LoRA 在自注意力查询和输出投影上的增量倍率。\n\n自注意力K/V增益：局部 LoRA 在自注意力键和值投影上的增量倍率。\n\n交叉注意力增益：当前身份受支持交叉注意力 LoRA 增量的倍率。\n\nMLP增益：局部 LoRA 在受支持前馈网络投影上的增量倍率。\n\n局部LoRA组：包含独立开关和倍率的局部 MODEL 适配器序列化数据；空组使用底模。\n\n前序身份：由此节点扩展的可选身份链。\n\n场景基线策略：用于一致计算身份残差的共享无画风参考条件。"
+      ]
+    },
+    {
+      "id": 33,
+      "type": "Note",
+      "pos": [
+        3870,
+        3250
+      ],
+      "size": [
+        460,
+        300
+      ],
+      "flags": {},
+      "mode": 0,
+      "order": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "Anima 身份条件",
+      "properties": {
+        "DocsFor": 14
+      },
+      "widgets_values": [
+        "将区域文本和可选局部 MODEL 适配器绑定到归属标识。\n\n文本编码器：用于编码共享和区域条件的 Anima 兼容文本编码器。\n\n归属布局：包含空间归属遮罩、区域标识和接触边界的数据。\n\n共享场景文本：与每个身份描述共同编码的共享语义上下文。\n\n区域标识：将身份条件分支与归属区域关联的标识，与显示名称无关。\n\n身份条件：单个区域条件分支的外观、服装和辨识属性。\n\nToken羽化半径：以模型图像 token 为单位的归属门控平滑半径；增大后边界特异性降低。\n\n身份文本增益：当前身份条件残差的倍率，与 LoRA 倍率相互独立。\n\n自注意力Q与输出增益：局部 LoRA 在自注意力查询和输出投影上的增量倍率。\n\n自注意力K/V增益：局部 LoRA 在自注意力键和值投影上的增量倍率。\n\n交叉注意力增益：当前身份受支持交叉注意力 LoRA 增量的倍率。\n\nMLP增益：局部 LoRA 在受支持前馈网络投影上的增量倍率。\n\n局部LoRA组：包含独立开关和倍率的局部 MODEL 适配器序列化数据；空组使用底模。\n\n前序身份：由此节点扩展的可选身份链。\n\n场景基线策略：用于一致计算身份残差的共享无画风参考条件。"
+      ]
+    },
+    {
+      "id": 34,
+      "type": "Note",
+      "pos": [
+        3870,
+        4300
+      ],
+      "size": [
+        460,
+        300
+      ],
+      "flags": {},
+      "mode": 0,
+      "order": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "Anima 身份条件",
+      "properties": {
+        "DocsFor": 15
+      },
+      "widgets_values": [
+        "将区域文本和可选局部 MODEL 适配器绑定到归属标识。\n\n文本编码器：用于编码共享和区域条件的 Anima 兼容文本编码器。\n\n归属布局：包含空间归属遮罩、区域标识和接触边界的数据。\n\n共享场景文本：与每个身份描述共同编码的共享语义上下文。\n\n区域标识：将身份条件分支与归属区域关联的标识，与显示名称无关。\n\n身份条件：单个区域条件分支的外观、服装和辨识属性。\n\nToken羽化半径：以模型图像 token 为单位的归属门控平滑半径；增大后边界特异性降低。\n\n身份文本增益：当前身份条件残差的倍率，与 LoRA 倍率相互独立。\n\n自注意力Q与输出增益：局部 LoRA 在自注意力查询和输出投影上的增量倍率。\n\n自注意力K/V增益：局部 LoRA 在自注意力键和值投影上的增量倍率。\n\n交叉注意力增益：当前身份受支持交叉注意力 LoRA 增量的倍率。\n\nMLP增益：局部 LoRA 在受支持前馈网络投影上的增量倍率。\n\n局部LoRA组：包含独立开关和倍率的局部 MODEL 适配器序列化数据；空组使用底模。\n\n前序身份：由此节点扩展的可选身份链。\n\n场景基线策略：用于一致计算身份残差的共享无画风参考条件。"
+      ]
+    },
+    {
+      "id": 35,
+      "type": "Note",
+      "pos": [
+        5270,
+        100
+      ],
+      "size": [
+        460,
+        300
+      ],
+      "flags": {},
+      "mode": 0,
+      "order": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "Anima 区域路由",
+      "properties": {
+        "DocsFor": 16
+      },
+      "widgets_values": [
+        "构建空间文本与适配器残差路由，同时保留共享模型基线。\n\n模型：用于构建区域采样管线的原始扩散模型。\n\n归属布局：包含空间归属遮罩、区域标识和接触边界的数据。\n\n身份文本强度：区域文本相对共享条件基线的残差全局倍率。\n\n交叉注意力LoRA强度：交叉注意力适配器残差的全局倍率，不缩放身份文本残差。\n\n自注意力K/V策略：是否让区域适配器影响自注意力的键和值投影。\n\n重叠分配：用于分配被多个归属区域覆盖的 token 的策略。\n\n接触区适配器释放：在接触边界内移除的适配器影响比例；身份文本仍保持有效。\n\n自适应归属：可选的基于注意力的归属精修，需要明确空间先验。\n\n观测调用数：用于自适应归属观测的初始模型前向调用次数。\n\n自适应混合比例：观测亲和度与输入归属先验之间的插值权重。\n\n自注意力路由：区域适配器采用局部输出残差路由或共享投影路由。\n\nCFG适配器分支：适配器作用于两个引导分支或仅条件分支；不替换负面文本。\n\n门控归一化：分区门控在独占归属分配后保留已覆盖 token 的幅度。\n\n自注意力区域隔离：实验性抑制不同身份区域之间的注意力；零保留原生注意力。\n\n隔离起始层比例：开始应用空间自注意力隔离的 Transformer 层深度比例。\n\n身份列表：分配到当前采样管线的有效身份分支。"
+      ]
+    },
+    {
+      "id": 36,
+      "type": "Note",
+      "pos": [
+        5270,
+        1150
+      ],
+      "size": [
+        460,
+        300
+      ],
+      "flags": {},
+      "mode": 0,
+      "order": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "Anima 布局控制图",
+      "properties": {
+        "DocsFor": 17
+      },
+      "widgets_values": [
+        "从归属标签提取结构控制图和效果遮罩。\n\n归属布局：包含空间归属遮罩、区域标识和接触边界的数据。\n\n控制表示：从归属标签生成轮廓或身份色块控制表示。\n\n边界平滑：提取控制几何前平滑离散归属边界的像素半径。\n\n轮廓线宽：提取轮廓表示的输出像素线宽。\n\n效果外扩边距：前景控制效果遮罩的像素膨胀距离。\n\n控制释放遮罩：白色像素在局部抑制结构控制，不改变身份归属。"
+      ]
+    },
+    {
+      "id": 37,
+      "type": "Note",
+      "pos": [
+        5270,
+        1485
+      ],
+      "size": [
+        460,
+        300
+      ],
+      "flags": {},
+      "mode": 0,
+      "order": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "Anima LLLite加载器",
+      "properties": {
+        "DocsFor": 18
+      },
+      "widgets_values": [
+        "加载已验证的 Anima 结构或 Tile 控制权重。\n\n模型预设：具有固定来源版本、安装目录和 SHA256 校验值的模型预设。\n\n自动下载：执行时下载目录清单中的缺失权重，验证 SHA256 并原子安装。"
+      ]
+    },
+    {
+      "id": 38,
+      "type": "Note",
+      "pos": [
+        5270,
+        1820
+      ],
+      "size": [
+        460,
+        300
+      ],
+      "flags": {},
+      "mode": 0,
+      "order": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "Anima 区域轻量控制",
+      "properties": {
+        "DocsFor": 19
+      },
+      "widgets_values": [
+        "向区域管线应用具有时间表的结构残差。\n\n区域管线：包含原始模型、身份、归属布局和运行设置的单个采样阶段管线。\n\nLLLite控制模型：与输入控制表示匹配的已加载 Anima LLLite 权重。\n\n参考图像：用于空间或分割参考的单张 RGB 图像。\n\n控制强度：结构控制在有效扩散区间内的残差倍率。\n\n控制起点：模型完整扩散时间表上的控制起始位置。\n\n控制终点：模型完整扩散时间表上的控制结束位置。\n\n渐退区间：控制强度在末段下降至零所使用的时间表区间长度。\n\n后续阶段控制强度：重建后续采样阶段时明确保留的控制强度。\n\n控制效果遮罩：白色保留结构控制，黑色关闭结构控制；与身份门控独立。"
+      ]
+    },
+    {
+      "id": 39,
+      "type": "Note",
+      "pos": [
+        7220,
+        1400
+      ],
+      "size": [
+        460,
+        300
+      ],
+      "flags": {},
+      "mode": 0,
+      "order": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "Anima 区域诊断",
+      "properties": {
+        "DocsFor": 25
+      },
+      "widgets_values": [
+        "采样后检查空间门控和运行时适配器活动。\n\n区域管线：包含原始模型、身份、归属布局和运行设置的单个采样阶段管线。\n\n潜空间样本：与输入管线关联的采样阶段产生的潜空间样本。\n\n参考图像：用于空间或分割参考的单张 RGB 图像。"
+      ]
+    },
+    {
+      "id": 40,
+      "type": "Note",
+      "pos": [
+        -850,
+        0
+      ],
+      "size": [
+        750,
+        1900
+      ],
+      "flags": {},
+      "mode": 0,
+      "order": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "所需模型、来源与放置目录",
+      "properties": {
+        "ModelSources": true
+      },
+      "widgets_values": [
+        "Anima 底模架构：Base 1.0，28 层。\n底模、文本编码器、VAE：https://huggingface.co/circlestone-labs/Anima\nmodels/diffusion_models\nmodels/text_encoders\nmodels/vae\n\n插件启动时创建缺失目录；节点执行且启用自动下载时获取模型。\n\nSAM3：models/sam3/facebook-sam3\nhttps://huggingface.co/bodhicitta/sam3/tree/cba430d22f6fdc3f06ad3841274ec7bb55885f2f\n安装 requirements_sam3.txt；公开仓库无需登录，执行节点可自动下载。\n\noutline\nmodels/model_patches/anima-lllite-any-test-like-v2.safetensors\nhttps://huggingface.co/kohya-ss/Anima-LLLite/resolve/36ba7f2f498a1ca63cc77fc7a1298652f72d4524/anima-lllite-any-test-like-v2.safetensors"
+      ]
+    }
+  ],
+  "links": [
+    [
+      1,
+      1,
+      0,
+      2,
+      0,
+      "MODEL"
+    ],
+    [
+      2,
+      3,
+      0,
+      5,
+      0,
+      "CLIP"
+    ],
+    [
+      3,
+      6,
+      0,
+      7,
+      0,
+      "IMAGE"
+    ],
+    [
+      4,
+      7,
+      0,
+      8,
+      0,
+      "ANIMA_LAYOUT"
+    ],
+    [
+      5,
+      7,
+      1,
+      9,
+      0,
+      "IMAGE"
+    ],
+    [
+      6,
+      3,
+      0,
+      11,
+      0,
+      "CLIP"
+    ],
+    [
+      7,
+      8,
+      0,
+      11,
+      1,
+      "ANIMA_LAYOUT"
+    ],
+    [
+      8,
+      5,
+      2,
+      11,
+      2,
+      "STRING"
+    ],
+    [
+      9,
+      5,
+      3,
+      11,
+      4,
+      "ANIMA_SCENE_POLICY"
+    ],
+    [
+      10,
+      3,
+      0,
+      12,
+      0,
+      "CLIP"
+    ],
+    [
+      11,
+      8,
+      0,
+      12,
+      1,
+      "ANIMA_LAYOUT"
+    ],
+    [
+      12,
+      5,
+      2,
+      12,
+      2,
+      "STRING"
+    ],
+    [
+      13,
+      5,
+      3,
+      12,
+      4,
+      "ANIMA_SCENE_POLICY"
+    ],
+    [
+      14,
+      11,
+      0,
+      12,
+      3,
+      "ANIMA_IDENTITIES"
+    ],
+    [
+      15,
+      3,
+      0,
+      13,
+      0,
+      "CLIP"
+    ],
+    [
+      16,
+      8,
+      0,
+      13,
+      1,
+      "ANIMA_LAYOUT"
+    ],
+    [
+      17,
+      5,
+      2,
+      13,
+      2,
+      "STRING"
+    ],
+    [
+      18,
+      5,
+      3,
+      13,
+      4,
+      "ANIMA_SCENE_POLICY"
+    ],
+    [
+      19,
+      12,
+      0,
+      13,
+      3,
+      "ANIMA_IDENTITIES"
+    ],
+    [
+      20,
+      3,
+      0,
+      14,
+      0,
+      "CLIP"
+    ],
+    [
+      21,
+      8,
+      0,
+      14,
+      1,
+      "ANIMA_LAYOUT"
+    ],
+    [
+      22,
+      5,
+      2,
+      14,
+      2,
+      "STRING"
+    ],
+    [
+      23,
+      5,
+      3,
+      14,
+      4,
+      "ANIMA_SCENE_POLICY"
+    ],
+    [
+      24,
+      13,
+      0,
+      14,
+      3,
+      "ANIMA_IDENTITIES"
+    ],
+    [
+      25,
+      3,
+      0,
+      15,
+      0,
+      "CLIP"
+    ],
+    [
+      26,
+      8,
+      0,
+      15,
+      1,
+      "ANIMA_LAYOUT"
+    ],
+    [
+      27,
+      5,
+      2,
+      15,
+      2,
+      "STRING"
+    ],
+    [
+      28,
+      5,
+      3,
+      15,
+      4,
+      "ANIMA_SCENE_POLICY"
+    ],
+    [
+      29,
+      14,
+      0,
+      15,
+      3,
+      "ANIMA_IDENTITIES"
+    ],
+    [
+      30,
+      2,
+      0,
+      16,
+      0,
+      "MODEL"
+    ],
+    [
+      31,
+      15,
+      0,
+      16,
+      2,
+      "ANIMA_IDENTITIES"
+    ],
+    [
+      32,
+      8,
+      0,
+      16,
+      1,
+      "ANIMA_LAYOUT"
+    ],
+    [
+      33,
+      8,
+      0,
+      17,
+      0,
+      "ANIMA_LAYOUT"
+    ],
+    [
+      34,
+      16,
+      1,
+      19,
+      0,
+      "ANIMA_PIPELINE"
+    ],
+    [
+      35,
+      18,
+      0,
+      19,
+      1,
+      "ANIMA_LLLITE"
+    ],
+    [
+      36,
+      17,
+      0,
+      19,
+      2,
+      "IMAGE"
+    ],
+    [
+      37,
+      17,
+      1,
+      19,
+      3,
+      "MASK"
+    ],
+    [
+      38,
+      17,
+      0,
+      20,
+      0,
+      "IMAGE"
+    ],
+    [
+      39,
+      8,
+      4,
+      21,
+      0,
+      "INT"
+    ],
+    [
+      40,
+      8,
+      5,
+      21,
+      1,
+      "INT"
+    ],
+    [
+      41,
+      19,
+      0,
+      22,
+      0,
+      "MODEL"
+    ],
+    [
+      42,
+      5,
+      0,
+      22,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      43,
+      5,
+      1,
+      22,
+      2,
+      "CONDITIONING"
+    ],
+    [
+      44,
+      21,
+      0,
+      22,
+      3,
+      "LATENT"
+    ],
+    [
+      45,
+      22,
+      0,
+      23,
+      0,
+      "LATENT"
+    ],
+    [
+      46,
+      4,
+      0,
+      23,
+      1,
+      "VAE"
+    ],
+    [
+      47,
+      23,
+      0,
+      24,
+      0,
+      "IMAGE"
+    ],
+    [
+      48,
+      19,
+      1,
+      25,
+      0,
+      "ANIMA_PIPELINE"
+    ],
+    [
+      49,
+      22,
+      0,
+      25,
+      1,
+      "LATENT"
+    ],
+    [
+      50,
+      23,
+      0,
+      25,
+      2,
+      "IMAGE"
+    ],
+    [
+      51,
+      25,
+      0,
+      26,
+      0,
+      "IMAGE"
+    ]
+  ],
+  "groups": [
+    {
+      "id": 1,
+      "title": "底模与共享场景",
+      "bounding": [
+        0,
+        0,
+        1800,
+        1900
+      ],
+      "color": "#345763",
+      "font_size": 24,
+      "flags": {}
+    },
+    {
+      "id": 2,
+      "title": "参考图与人物归属",
+      "bounding": [
+        1900,
+        0,
+        1800,
+        3200
+      ],
+      "color": "#345763",
+      "font_size": 24,
+      "flags": {}
+    },
+    {
+      "id": 3,
+      "title": "独立身份条件",
+      "bounding": [
+        3850,
+        0,
+        1250,
+        5400
+      ],
+      "color": "#345763",
+      "font_size": 24,
+      "flags": {}
+    },
+    {
+      "id": 4,
+      "title": "区域路由与结构控制",
+      "bounding": [
+        5250,
+        0,
+        1800,
+        3000
+      ],
+      "color": "#345763",
+      "font_size": 24,
+      "flags": {}
+    },
+    {
+      "id": 5,
+      "title": "采样与诊断",
+      "bounding": [
+        7200,
+        0,
+        1800,
+        2200
+      ],
+      "color": "#345763",
+      "font_size": 24,
+      "flags": {}
+    }
+  ],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.45,
+      "offset": [
+        50,
+        50
+      ]
+    },
+    "animaExample": {
+      "people": 5,
+      "route": "sam3",
+      "tile": false
+    }
+  },
+  "version": 0.4
+}

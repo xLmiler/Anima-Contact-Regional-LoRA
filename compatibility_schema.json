@@ -1,0 +1,871 @@
+{
+  "AnimaContactAnimeDetectV7": {
+    "target": "AnimaPersonDetect",
+    "inputs": {
+      "required": {
+        "image": [
+          "IMAGE",
+          {
+            "tooltip": "Single RGB image used as the spatial or segmentation reference."
+          }
+        ],
+        "detector": [
+          [
+            "person_detect_v1.3_s.onnx",
+            "person_detect_v1.1_m.onnx"
+          ],
+          {
+            "tooltip": "Anime person detector filename in the registered model directory."
+          }
+        ],
+        "expected_people": [
+          "INT",
+          {
+            "default": 0,
+            "tooltip": "Zero accepts the detected count; a positive value verifies the count before segmentation.",
+            "min": 0,
+            "max": 16
+          }
+        ],
+        "confidence": [
+          "FLOAT",
+          {
+            "default": 0.3,
+            "tooltip": "Minimum person detection confidence accepted before non-maximum suppression.",
+            "min": 0.05,
+            "max": 0.95,
+            "step": 0.05
+          }
+        ],
+        "nms_iou": [
+          "FLOAT",
+          {
+            "default": 0.75,
+            "tooltip": "Intersection-over-union threshold for suppressing duplicate person boxes.",
+            "min": 0.1,
+            "max": 0.95,
+            "step": 0.05
+          }
+        ],
+        "resolution": [
+          "INT",
+          {
+            "default": 640,
+            "tooltip": "Input spatial resolution used by dynamically shaped detection models.",
+            "min": 320,
+            "max": 1536,
+            "step": 32
+          }
+        ]
+      }
+    },
+    "outputs": [
+      "ANIMA_ANIME_BOXES_V7",
+      "IMAGE",
+      "INT",
+      "STRING"
+    ],
+    "function": "detect"
+  },
+  "AnimaContactAnimeRegionsV7": {
+    "target": "AnimaPersonSegment",
+    "inputs": {
+      "required": {
+        "image": [
+          "IMAGE",
+          {
+            "tooltip": "Single RGB image used as the spatial or segmentation reference."
+          }
+        ],
+        "people": [
+          "ANIMA_ANIME_BOXES_V7",
+          {
+            "tooltip": "Validated detection boxes and their source image association."
+          }
+        ],
+        "sam2_checkpoint": [
+          [
+            "sam2.1_hiera_tiny.pt"
+          ],
+          {
+            "tooltip": "Official SAM2.1 checkpoint filename matching the registered model configuration."
+          }
+        ],
+        "canvas_width": [
+          "INT",
+          {
+            "default": 1024,
+            "tooltip": "Target image width in pixels; must be divisible by 16.",
+            "min": 64,
+            "max": 16192,
+            "step": 16
+          }
+        ],
+        "canvas_height": [
+          "INT",
+          {
+            "default": 1024,
+            "tooltip": "Target image height in pixels; must be divisible by 16.",
+            "min": 64,
+            "max": 16192,
+            "step": 16
+          }
+        ],
+        "analysis_resolution": [
+          "INT",
+          {
+            "default": 512,
+            "tooltip": "Longest side used for instance segmentation and edge-aware ownership allocation.",
+            "min": 256,
+            "max": 1024,
+            "step": 64
+          }
+        ],
+        "contact_width": [
+          "INT",
+          {
+            "default": 10,
+            "tooltip": "Radius in target pixels used to mark adjacent identity boundaries.",
+            "min": 0,
+            "max": 64
+          }
+        ]
+      },
+      "optional": {
+        "manual_seeds": [
+          "ANIMA_CONTACT_SEEDS_V61",
+          {
+            "tooltip": "Optional positive identity and background annotations constraining instance segmentation."
+          }
+        ],
+        "foreground_model": [
+          [
+            "disabled",
+            "auto"
+          ],
+          {
+            "tooltip": "Optional union foreground source for the legacy segmentation interface. It does not assign instance identities."
+          }
+        ],
+        "refinement": [
+          [
+            "off",
+            "mask_refine"
+          ],
+          {
+            "tooltip": "Optional second SAM2 prediction conditioned on the selected low-resolution mask logits."
+          }
+        ]
+      }
+    },
+    "outputs": [
+      "ANIMA_CONTACT_LAYOUT_V5",
+      "IMAGE",
+      "IMAGE",
+      "INT",
+      "INT",
+      "STRING"
+    ],
+    "function": "analyze"
+  },
+  "AnimaContactApplyV9": {
+    "target": "AnimaRegionalApply",
+    "inputs": {
+      "required": {
+        "model": [
+          "MODEL",
+          {
+            "tooltip": "Unmodified source diffusion model used to construct a regional sampling pipeline."
+          }
+        ],
+        "layout": [
+          "ANIMA_CONTACT_LAYOUT_V5",
+          {
+            "tooltip": "Spatial ownership masks, region identifiers and contact boundaries."
+          }
+        ],
+        "identity_strength": [
+          "FLOAT",
+          {
+            "default": 1.0,
+            "tooltip": "Global scale of regional text residuals relative to the shared conditioning baseline.",
+            "min": 0,
+            "max": 1,
+            "step": 0.05
+          }
+        ],
+        "cross_lora_strength": [
+          "FLOAT",
+          {
+            "default": 1.0,
+            "tooltip": "Global scale of cross-attention adapter residuals; does not scale identity text residuals.",
+            "min": 0,
+            "max": 1.5,
+            "step": 0.05
+          }
+        ],
+        "self_kv_mode": [
+          [
+            "regional",
+            "base"
+          ],
+          {
+            "tooltip": "Whether regional adapters affect self-attention key and value projections."
+          }
+        ],
+        "overlap_mode": [
+          [
+            "nearest",
+            "soft"
+          ],
+          {
+            "tooltip": "Policy used to allocate tokens covered by multiple ownership regions."
+          }
+        ],
+        "contact_lora_release": [
+          "FLOAT",
+          {
+            "default": 0.0,
+            "tooltip": "Fraction of adapter influence removed inside contact boundaries; identity text remains active.",
+            "min": 0,
+            "max": 1,
+            "step": 0.05
+          }
+        ],
+        "adaptive_mode": [
+          [
+            "off",
+            "refine"
+          ],
+          {
+            "tooltip": "Optional attention-based ownership refinement; requires explicit spatial priors."
+          }
+        ],
+        "adaptive_calls": [
+          "INT",
+          {
+            "default": 2,
+            "tooltip": "Number of initial model forward calls used for adaptive ownership observations.",
+            "min": 1,
+            "max": 8
+          }
+        ],
+        "adaptive_blend": [
+          "FLOAT",
+          {
+            "default": 0.25,
+            "tooltip": "Interpolation weight between observed affinity and the supplied ownership prior.",
+            "min": 0,
+            "max": 1,
+            "step": 0.05
+          }
+        ],
+        "self_attention_mode": [
+          [
+            "local_output",
+            "shared_projection"
+          ],
+          {
+            "tooltip": "Local output residual routing or shared projection routing for regional adapters."
+          }
+        ],
+        "cfg_lora_mode": [
+          [
+            "both",
+            "positive_only"
+          ],
+          {
+            "tooltip": "Applies adapters to both guidance branches or only the conditional branch; negative text is not replaced."
+          }
+        ],
+        "gate_mode": [
+          [
+            "partition",
+            "legacy"
+          ],
+          {
+            "tooltip": "Partition gates preserve covered-token magnitude after exclusive ownership allocation."
+          }
+        ]
+      },
+      "optional": {
+        "roles": [
+          "ANIMA_CONTACT_ROLES_V5",
+          {
+            "tooltip": "Active identity branches assigned to this sampling pipeline."
+          }
+        ]
+      }
+    },
+    "outputs": [
+      "MODEL",
+      "ANIMA_CONTACT_PIPE_V5",
+      "STRING"
+    ],
+    "function": "apply"
+  },
+  "AnimaContactInspectV5": {
+    "target": "AnimaRegionalInspect",
+    "inputs": {
+      "required": {
+        "pipeline": [
+          "ANIMA_CONTACT_PIPE_V5",
+          {
+            "tooltip": "Source model, identities, ownership layout and runtime settings for one sampling stage."
+          }
+        ],
+        "samples": [
+          "LATENT",
+          {
+            "tooltip": "Latent samples produced by the sampling stage associated with the supplied pipeline."
+          }
+        ]
+      },
+      "optional": {
+        "image": [
+          "IMAGE",
+          {
+            "tooltip": "Single RGB image used as the spatial or segmentation reference."
+          }
+        ]
+      }
+    },
+    "outputs": [
+      "IMAGE",
+      "STRING"
+    ],
+    "function": "inspect"
+  },
+  "AnimaContactLLLiteApplyV7": {
+    "target": "AnimaContactLLLiteApply",
+    "inputs": {
+      "required": {
+        "pipeline": [
+          "ANIMA_CONTACT_PIPE_V5",
+          {
+            "tooltip": "Source model, identities, ownership layout and runtime settings for one sampling stage."
+          }
+        ],
+        "control": [
+          "ANIMA_SHAPE_LLLITE_V7",
+          {
+            "tooltip": "Loaded Anima LLLite weights matching the supplied control representation."
+          }
+        ],
+        "image": [
+          "IMAGE",
+          {
+            "tooltip": "Single RGB image used as the spatial or segmentation reference."
+          }
+        ],
+        "strength": [
+          "FLOAT",
+          {
+            "default": 0.65,
+            "tooltip": "Scale of the structural control residual during its active diffusion interval.",
+            "min": 0,
+            "max": 2,
+            "step": 0.05
+          }
+        ],
+        "start_percent": [
+          "FLOAT",
+          {
+            "default": 0.0,
+            "tooltip": "Start position on the model's full diffusion schedule.",
+            "min": 0,
+            "max": 1,
+            "step": 0.05
+          }
+        ],
+        "end_percent": [
+          "FLOAT",
+          {
+            "default": 0.55,
+            "tooltip": "End position on the model's full diffusion schedule.",
+            "min": 0,
+            "max": 1,
+            "step": 0.05
+          }
+        ],
+        "fade_out": [
+          "FLOAT",
+          {
+            "default": 0.15,
+            "tooltip": "Length of the terminal schedule interval over which control strength decreases to zero.",
+            "min": 0,
+            "max": 1,
+            "step": 0.05
+          }
+        ],
+        "second_pass_strength": [
+          "FLOAT",
+          {
+            "default": 0.0,
+            "tooltip": "Explicit control strength retained when rebuilding a later sampling stage.",
+            "min": 0,
+            "max": 2,
+            "step": 0.05
+          }
+        ]
+      },
+      "optional": {
+        "effect_mask": [
+          "MASK",
+          {
+            "tooltip": "White preserves structural control and black disables it; independent of identity gates."
+          }
+        ]
+      }
+    },
+    "outputs": [
+      "MODEL",
+      "ANIMA_CONTACT_PIPE_V5",
+      "STRING"
+    ],
+    "function": "apply"
+  },
+  "AnimaContactLLLiteModelV7": {
+    "target": "AnimaLLLiteLoader",
+    "inputs": {
+      "required": {
+        "model_name": [
+          [
+            "model_patches/anima-lllite-any-test-like-v2.safetensors"
+          ],
+          {
+            "tooltip": "Model file selected from the registered control directories. Supported missing presets are downloaded automatically."
+          }
+        ],
+        "profile": [
+          [
+            "any-test-v2",
+            "regional-exp-v3",
+            "custom-v2"
+          ],
+          {
+            "tooltip": "Architecture profile used to validate the LLLite weight structure."
+          }
+        ]
+      }
+    },
+    "outputs": [
+      "ANIMA_SHAPE_LLLITE_V7",
+      "STRING"
+    ],
+    "function": "load"
+  },
+  "AnimaContactLayoutControlV7": {
+    "target": "AnimaLayoutControl",
+    "inputs": {
+      "required": {
+        "layout": [
+          "ANIMA_CONTACT_LAYOUT_V5",
+          {
+            "tooltip": "Spatial ownership masks, region identifiers and contact boundaries."
+          }
+        ],
+        "mode": [
+          [
+            "outline",
+            "region_color"
+          ],
+          {
+            "tooltip": "Outline or identity-color representation generated from ownership labels."
+          }
+        ],
+        "smooth_pixels": [
+          "INT",
+          {
+            "default": 2,
+            "tooltip": "Pixel radius used to smooth discrete ownership boundaries before extracting control geometry.",
+            "min": 0,
+            "max": 16
+          }
+        ],
+        "line_width": [
+          "INT",
+          {
+            "default": 3,
+            "tooltip": "Width in output pixels of the extracted outline representation.",
+            "min": 1,
+            "max": 12
+          }
+        ],
+        "effect_margin": [
+          "INT",
+          {
+            "default": 16,
+            "tooltip": "Pixel dilation of the foreground control-effect mask.",
+            "min": 0,
+            "max": 128
+          }
+        ]
+      },
+      "optional": {
+        "release_mask": [
+          "MASK",
+          {
+            "tooltip": "White pixels suppress structural control locally without changing identity ownership."
+          }
+        ]
+      }
+    },
+    "outputs": [
+      "IMAGE",
+      "MASK"
+    ],
+    "function": "make"
+  },
+  "AnimaContactRegionsPaintV9": {
+    "target": "AnimaOwnershipEditor",
+    "inputs": {
+      "required": {
+        "layout": [
+          "ANIMA_CONTACT_LAYOUT_V5",
+          {
+            "tooltip": "Spatial ownership masks, region identifiers and contact boundaries."
+          }
+        ],
+        "strokes_json": [
+          "STRING",
+          {
+            "default": "{\"version\":1,\"strokes\":[]}",
+            "tooltip": "Serialized normalized brush strokes bound to the current reference layout.",
+            "multiline": true
+          }
+        ],
+        "island_pixels": [
+          "INT",
+          {
+            "default": 24,
+            "tooltip": "Maximum component area removed as isolated noise; each identity's largest component is retained.",
+            "min": 0,
+            "max": 4096
+          }
+        ],
+        "hole_pixels": [
+          "INT",
+          {
+            "default": 256,
+            "tooltip": "Maximum enclosed background area filled when the surrounding identity is sufficiently unambiguous.",
+            "min": 0,
+            "max": 4096
+          }
+        ],
+        "smooth_radius": [
+          "FLOAT",
+          {
+            "default": 0.6,
+            "tooltip": "Gaussian competition radius in target pixels for mutually exclusive identity labels.",
+            "min": 0,
+            "max": 4,
+            "step": 0.1
+          }
+        ],
+        "identity_names_json": [
+          "STRING",
+          {
+            "default": "{}",
+            "tooltip": "Optional region identifier to display-name mapping; labels do not alter spatial ownership.",
+            "multiline": true
+          }
+        ]
+      }
+    },
+    "outputs": [
+      "ANIMA_CONTACT_LAYOUT_V5",
+      "IMAGE",
+      "IMAGE",
+      "STRING"
+    ],
+    "function": "paint"
+  },
+  "AnimaContactRoleV9": {
+    "target": "AnimaIdentity",
+    "inputs": {
+      "required": {
+        "clip": [
+          "CLIP",
+          {
+            "tooltip": "Anima-compatible text encoder used to encode shared and regional conditioning."
+          }
+        ],
+        "layout": [
+          "ANIMA_CONTACT_LAYOUT_V5",
+          {
+            "tooltip": "Spatial ownership masks, region identifiers and contact boundaries."
+          }
+        ],
+        "scene_text": [
+          "STRING",
+          {
+            "forceInput": true,
+            "tooltip": "Shared semantic context encoded together with each identity description."
+          }
+        ],
+        "char_id": [
+          [
+            "char1",
+            "char2",
+            "char3",
+            "char4",
+            "char5",
+            "char6",
+            "char7",
+            "char8",
+            "char9",
+            "char10",
+            "char11",
+            "char12",
+            "char13",
+            "char14",
+            "char15",
+            "char16"
+          ],
+          {
+            "tooltip": "Identifier linking an identity conditioning branch to an ownership region; independent of display names."
+          }
+        ],
+        "identity_prompt": [
+          "STRING",
+          {
+            "default": "",
+            "tooltip": "Appearance, clothing and distinguishing attributes for one regional conditioning branch.",
+            "multiline": true
+          }
+        ],
+        "edge_softness": [
+          "INT",
+          {
+            "default": 0,
+            "tooltip": "Smoothing radius of ownership gates in model image tokens; larger values reduce edge specificity.",
+            "min": 0,
+            "max": 6
+          }
+        ],
+        "identity_gain": [
+          "FLOAT",
+          {
+            "default": 1.0,
+            "tooltip": "Multiplier for this identity's conditioning residual, independent of LoRA scale.",
+            "min": 0,
+            "max": 1.5,
+            "step": 0.05
+          }
+        ],
+        "self_q_out_gain": [
+          "FLOAT",
+          {
+            "default": 1.0,
+            "tooltip": "Multiplier for local LoRA increments on self-attention query and output projections.",
+            "min": 0,
+            "max": 2,
+            "step": 0.05
+          }
+        ],
+        "self_kv_gain": [
+          "FLOAT",
+          {
+            "default": 1.0,
+            "tooltip": "Multiplier for local LoRA increments on self-attention key and value projections.",
+            "min": 0,
+            "max": 2,
+            "step": 0.05
+          }
+        ],
+        "cross_gain": [
+          "FLOAT",
+          {
+            "default": 1.0,
+            "tooltip": "Per-identity multiplier for supported cross-attention LoRA increments.",
+            "min": 0,
+            "max": 2,
+            "step": 0.05
+          }
+        ],
+        "mlp_gain": [
+          "FLOAT",
+          {
+            "default": 1.0,
+            "tooltip": "Multiplier for local LoRA increments on supported feed-forward projections.",
+            "min": 0,
+            "max": 2,
+            "step": 0.05
+          }
+        ],
+        "lora_stack_json": [
+          "STRING",
+          {
+            "default": "{\"version\":1,\"entries\":[]}",
+            "tooltip": "Serialized local MODEL adapters with independent enable state and scale; an empty stack uses the base model.",
+            "multiline": true
+          }
+        ]
+      },
+      "optional": {
+        "previous_roles": [
+          "ANIMA_CONTACT_ROLES_V5",
+          {
+            "tooltip": "Optional identity chain extended by this node."
+          }
+        ],
+        "scene_policy": [
+          "ANIMA_SCENE_POLICY_V9",
+          {
+            "tooltip": "Shared unstyled reference conditioning used to compute identity residuals consistently."
+          }
+        ]
+      }
+    },
+    "outputs": [
+      "ANIMA_CONTACT_ROLES_V5"
+    ],
+    "function": "make"
+  },
+  "AnimaContactSceneV9": {
+    "target": "AnimaSceneConditioning",
+    "inputs": {
+      "required": {
+        "clip": [
+          "CLIP",
+          {
+            "tooltip": "Anima-compatible text encoder used to encode shared and regional conditioning."
+          }
+        ],
+        "scene_prompt": [
+          "STRING",
+          {
+            "default": "",
+            "tooltip": "Scene-level composition, interaction, environment and camera conditioning shared by all identities.",
+            "multiline": true
+          }
+        ],
+        "quality_prompt": [
+          "STRING",
+          {
+            "default": "",
+            "tooltip": "Style and quality conditioning applied to the global baseline, separate from identity residuals.",
+            "multiline": true
+          }
+        ],
+        "negative_prompt": [
+          "STRING",
+          {
+            "default": "worst quality, low quality, bad anatomy, extra limbs, fused bodies",
+            "tooltip": "Global negative conditioning for classifier-free guidance.",
+            "multiline": true
+          }
+        ]
+      }
+    },
+    "outputs": [
+      "CONDITIONING",
+      "CONDITIONING",
+      "STRING",
+      "ANIMA_SCENE_POLICY_V9"
+    ],
+    "function": "make"
+  },
+  "AnimaContactTileHiresV8": {
+    "target": "AnimaTileUpscale",
+    "inputs": {
+      "required": {
+        "pipeline": [
+          "ANIMA_CONTACT_PIPE_V5",
+          {
+            "tooltip": "Source model, identities, ownership layout and runtime settings for one sampling stage."
+          }
+        ],
+        "samples": [
+          "LATENT",
+          {
+            "tooltip": "Latent samples produced by the sampling stage associated with the supplied pipeline."
+          }
+        ],
+        "vae": [
+          "VAE",
+          {
+            "tooltip": "Compatible encoder and decoder used for pixel-space resizing and latent reconstruction."
+          }
+        ],
+        "tile_control": [
+          "ANIMA_SHAPE_LLLITE_V7",
+          {
+            "tooltip": "Anima TileRepair control weights used with generated RGB content."
+          }
+        ],
+        "scale_factor": [
+          "FLOAT",
+          {
+            "default": 1.5,
+            "tooltip": "Spatial image scale with target dimensions aligned to the model patch grid.",
+            "min": 1,
+            "max": 4,
+            "step": 0.05
+          }
+        ],
+        "tile_strength": [
+          "FLOAT",
+          {
+            "default": 0.8,
+            "tooltip": "Residual control scale for the generated-image Tile conditioning.",
+            "min": 0,
+            "max": 2,
+            "step": 0.05
+          }
+        ],
+        "start_percent": [
+          "FLOAT",
+          {
+            "default": 0.0,
+            "tooltip": "Start position on the model's full diffusion schedule.",
+            "min": 0,
+            "max": 1,
+            "step": 0.05
+          }
+        ],
+        "end_percent": [
+          "FLOAT",
+          {
+            "default": 1.0,
+            "tooltip": "End position on the model's full diffusion schedule.",
+            "min": 0,
+            "max": 1,
+            "step": 0.05
+          }
+        ]
+      }
+    },
+    "outputs": [
+      "MODEL",
+      "LATENT",
+      "ANIMA_CONTACT_PIPE_V5",
+      "IMAGE",
+      "INT",
+      "INT",
+      "STRING"
+    ],
+    "function": "prepare"
+  },
+  "AnimaContactTileModelV8": {
+    "target": "AnimaLLLiteLoader",
+    "inputs": {
+      "required": {
+        "model_name": [
+          [
+            "model_patches/anima-lllite-any-test-like-v2.safetensors"
+          ],
+          {
+            "tooltip": "Model file selected from the registered control directories. Supported missing presets are downloaded automatically."
+          }
+        ]
+      }
+    },
+    "outputs": [
+      "ANIMA_SHAPE_LLLITE_V7",
+      "STRING"
+    ],
+    "function": "load"
+  }
+}

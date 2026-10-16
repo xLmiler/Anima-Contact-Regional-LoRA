@@ -1,0 +1,1735 @@
+{
+  "AnimaRegionCanvas": {
+    "display_name": "Anima 区域画布",
+    "description": "编辑归一化空间归属几何数据。",
+    "inputs": {
+      "canvas_width": {
+        "name": "画布宽度",
+        "tooltip": "目标图像宽度，单位为像素，必须为16的倍数。"
+      },
+      "canvas_height": {
+        "name": "画布高度",
+        "tooltip": "目标图像高度，单位为像素，必须为16的倍数。"
+      },
+      "layout_json": {
+        "name": "区域几何",
+        "tooltip": "由可视化编辑器维护的归一化躯干、面部、归属和接触区域几何数据。"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "归属布局",
+        "tooltip": "归属布局"
+      },
+      "1": {
+        "name": "预览图",
+        "tooltip": "预览图"
+      },
+      "2": {
+        "name": "目标宽度",
+        "tooltip": "目标宽度"
+      },
+      "3": {
+        "name": "目标高度",
+        "tooltip": "目标高度"
+      }
+    }
+  },
+  "AnimaSceneConditioning": {
+    "display_name": "Anima 场景条件",
+    "description": "编码共享场景、全局画风与负面条件。",
+    "inputs": {
+      "clip": {
+        "name": "文本编码器",
+        "tooltip": "用于编码共享和区域条件的 Anima 兼容文本编码器。"
+      },
+      "scene_prompt": {
+        "name": "共享场景",
+        "tooltip": "由所有身份共享的构图、交互、环境和镜头条件。"
+      },
+      "quality_prompt": {
+        "name": "全局画风与质量",
+        "tooltip": "作用于全局基线并与身份残差分离的画风和质量条件。"
+      },
+      "negative_prompt": {
+        "name": "负面条件",
+        "tooltip": "用于无分类器引导的全局负面条件。"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "正面条件",
+        "tooltip": "正面条件"
+      },
+      "1": {
+        "name": "负面条件",
+        "tooltip": "负面条件"
+      },
+      "2": {
+        "name": "共享场景文本",
+        "tooltip": "共享场景文本"
+      },
+      "3": {
+        "name": "场景基线策略",
+        "tooltip": "场景基线策略"
+      }
+    }
+  },
+  "AnimaIdentity": {
+    "display_name": "Anima 身份条件",
+    "description": "将区域文本和可选局部 MODEL 适配器绑定到归属标识。",
+    "inputs": {
+      "clip": {
+        "name": "文本编码器",
+        "tooltip": "用于编码共享和区域条件的 Anima 兼容文本编码器。"
+      },
+      "layout": {
+        "name": "归属布局",
+        "tooltip": "包含空间归属遮罩、区域标识和接触边界的数据。"
+      },
+      "scene_text": {
+        "name": "共享场景文本",
+        "tooltip": "与每个身份描述共同编码的共享语义上下文。"
+      },
+      "char_id": {
+        "name": "区域标识",
+        "tooltip": "将身份条件分支与归属区域关联的标识，与显示名称无关。",
+        "options": {
+          "char1": "char1",
+          "char2": "char2",
+          "char3": "char3",
+          "char4": "char4",
+          "char5": "char5",
+          "char6": "char6",
+          "char7": "char7",
+          "char8": "char8",
+          "char9": "char9",
+          "char10": "char10",
+          "char11": "char11",
+          "char12": "char12",
+          "char13": "char13",
+          "char14": "char14",
+          "char15": "char15",
+          "char16": "char16"
+        }
+      },
+      "identity_prompt": {
+        "name": "身份条件",
+        "tooltip": "单个区域条件分支的外观、服装和辨识属性。"
+      },
+      "edge_softness": {
+        "name": "Token羽化半径",
+        "tooltip": "以模型图像 token 为单位的归属门控平滑半径；增大后边界特异性降低。"
+      },
+      "identity_gain": {
+        "name": "身份文本增益",
+        "tooltip": "当前身份条件残差的倍率，与 LoRA 倍率相互独立。"
+      },
+      "self_q_out_gain": {
+        "name": "自注意力Q与输出增益",
+        "tooltip": "局部 LoRA 在自注意力查询和输出投影上的增量倍率。"
+      },
+      "self_kv_gain": {
+        "name": "自注意力K/V增益",
+        "tooltip": "局部 LoRA 在自注意力键和值投影上的增量倍率。"
+      },
+      "cross_gain": {
+        "name": "交叉注意力增益",
+        "tooltip": "当前身份受支持交叉注意力 LoRA 增量的倍率。"
+      },
+      "mlp_gain": {
+        "name": "MLP增益",
+        "tooltip": "局部 LoRA 在受支持前馈网络投影上的增量倍率。"
+      },
+      "lora_stack_json": {
+        "name": "局部LoRA组",
+        "tooltip": "包含独立开关和倍率的局部 MODEL 适配器序列化数据；空组使用底模。"
+      },
+      "previous_roles": {
+        "name": "前序身份",
+        "tooltip": "由此节点扩展的可选身份链。"
+      },
+      "scene_policy": {
+        "name": "场景基线策略",
+        "tooltip": "用于一致计算身份残差的共享无画风参考条件。"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "身份列表",
+        "tooltip": "身份列表"
+      }
+    }
+  },
+  "AnimaRegionalApply": {
+    "display_name": "Anima 区域路由",
+    "description": "构建空间文本与适配器残差路由，同时保留共享模型基线。",
+    "inputs": {
+      "model": {
+        "name": "模型",
+        "tooltip": "用于构建区域采样管线的原始扩散模型。"
+      },
+      "layout": {
+        "name": "归属布局",
+        "tooltip": "包含空间归属遮罩、区域标识和接触边界的数据。"
+      },
+      "identity_strength": {
+        "name": "身份文本强度",
+        "tooltip": "区域文本相对共享条件基线的残差全局倍率。"
+      },
+      "cross_lora_strength": {
+        "name": "交叉注意力LoRA强度",
+        "tooltip": "交叉注意力适配器残差的全局倍率，不缩放身份文本残差。"
+      },
+      "self_kv_mode": {
+        "name": "自注意力K/V策略",
+        "tooltip": "是否让区域适配器影响自注意力的键和值投影。",
+        "options": {
+          "regional": "区域模式",
+          "base": "底模模式"
+        }
+      },
+      "overlap_mode": {
+        "name": "重叠分配",
+        "tooltip": "用于分配被多个归属区域覆盖的 token 的策略。",
+        "options": {
+          "nearest": "最近归属",
+          "soft": "柔性混合"
+        }
+      },
+      "contact_lora_release": {
+        "name": "接触区适配器释放",
+        "tooltip": "在接触边界内移除的适配器影响比例；身份文本仍保持有效。"
+      },
+      "adaptive_mode": {
+        "name": "自适应归属",
+        "tooltip": "可选的基于注意力的归属精修，需要明确空间先验。",
+        "options": {
+          "off": "关闭",
+          "refine": "精修"
+        }
+      },
+      "adaptive_calls": {
+        "name": "观测调用数",
+        "tooltip": "用于自适应归属观测的初始模型前向调用次数。"
+      },
+      "adaptive_blend": {
+        "name": "自适应混合比例",
+        "tooltip": "观测亲和度与输入归属先验之间的插值权重。"
+      },
+      "self_attention_mode": {
+        "name": "自注意力路由",
+        "tooltip": "区域适配器采用局部输出残差路由或共享投影路由。",
+        "options": {
+          "local_output": "局部输出",
+          "shared_projection": "共享投影"
+        }
+      },
+      "cfg_lora_mode": {
+        "name": "CFG适配器分支",
+        "tooltip": "适配器作用于两个引导分支或仅条件分支；不替换负面文本。",
+        "options": {
+          "both": "正负分支",
+          "positive_only": "仅正面分支"
+        }
+      },
+      "gate_mode": {
+        "name": "门控归一化",
+        "tooltip": "分区门控在独占归属分配后保留已覆盖 token 的幅度。",
+        "options": {
+          "partition": "分区归一化",
+          "legacy": "兼容归一化"
+        }
+      },
+      "self_region_isolation": {
+        "name": "自注意力区域隔离",
+        "tooltip": "实验性抑制不同身份区域之间的注意力；零保留原生注意力。"
+      },
+      "isolation_start_layer": {
+        "name": "隔离起始层比例",
+        "tooltip": "开始应用空间自注意力隔离的 Transformer 层深度比例。"
+      },
+      "roles": {
+        "name": "身份列表",
+        "tooltip": "分配到当前采样管线的有效身份分支。"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "区域模型",
+        "tooltip": "区域模型"
+      },
+      "1": {
+        "name": "区域管线",
+        "tooltip": "区域管线"
+      },
+      "2": {
+        "name": "诊断报告",
+        "tooltip": "诊断报告"
+      }
+    }
+  },
+  "AnimaPersonDetect": {
+    "display_name": "Anima 人物检测",
+    "description": "检测二次元人物实例并分配确定的空间标识。",
+    "inputs": {
+      "image": {
+        "name": "参考图像",
+        "tooltip": "用于空间或分割参考的单张 RGB 图像。"
+      },
+      "detector": {
+        "name": "人物检测模型",
+        "tooltip": "已注册模型目录中的二次元人物检测模型文件名。",
+        "options": {
+          "person_detect_v1.3_s.onnx": "person_detect_v1.3_s.onnx",
+          "person_detect_v1.1_m.onnx": "person_detect_v1.1_m.onnx"
+        }
+      },
+      "expected_people": {
+        "name": "预期人数",
+        "tooltip": "零表示采用检测人数；正值在分割前核对人数。"
+      },
+      "confidence": {
+        "name": "检测阈值",
+        "tooltip": "非极大值抑制前接受的人物检测最低置信度。"
+      },
+      "nms_iou": {
+        "name": "NMS交并比",
+        "tooltip": "用于抑制重复人物框的交并比阈值。"
+      },
+      "resolution": {
+        "name": "检测分辨率",
+        "tooltip": "动态输入形状检测模型使用的空间分辨率。"
+      },
+      "auto_download": {
+        "name": "自动下载",
+        "tooltip": "执行时下载目录清单中的缺失权重，验证 SHA256 并原子安装。"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "人物检测记录",
+        "tooltip": "人物检测记录"
+      },
+      "1": {
+        "name": "预览图",
+        "tooltip": "预览图"
+      },
+      "2": {
+        "name": "实际人数",
+        "tooltip": "实际人数"
+      },
+      "3": {
+        "name": "诊断报告",
+        "tooltip": "诊断报告"
+      }
+    }
+  },
+  "AnimaPersonSegment": {
+    "display_name": "Anima 实例分割",
+    "description": "结合检测框、SAM2 与可选前景先验分配可见像素。",
+    "inputs": {
+      "image": {
+        "name": "参考图像",
+        "tooltip": "用于空间或分割参考的单张 RGB 图像。"
+      },
+      "people": {
+        "name": "人物检测记录",
+        "tooltip": "已验证的人物检测框及其源图像关联信息。"
+      },
+      "sam2_checkpoint": {
+        "name": "SAM2权重",
+        "tooltip": "与已注册模型配置匹配的官方 SAM2.1 权重文件名。",
+        "options": {
+          "sam2.1_hiera_tiny.pt": "sam2.1_hiera_tiny.pt"
+        }
+      },
+      "canvas_width": {
+        "name": "画布宽度",
+        "tooltip": "目标图像宽度，单位为像素，必须为16的倍数。"
+      },
+      "canvas_height": {
+        "name": "画布高度",
+        "tooltip": "目标图像高度，单位为像素，必须为16的倍数。"
+      },
+      "analysis_resolution": {
+        "name": "分析分辨率",
+        "tooltip": "实例分割和边缘感知归属分配使用的最长边分辨率。"
+      },
+      "contact_width": {
+        "name": "接触半径",
+        "tooltip": "用于标记相邻身份边界的目标图像像素半径。"
+      },
+      "manual_seeds": {
+        "name": "身份种子",
+        "tooltip": "用于约束实例分割的可选身份正标注和背景标注。"
+      },
+      "refinement": {
+        "name": "遮罩精修",
+        "tooltip": "可选的第二次 SAM2 预测，使用已选低分辨率遮罩 logits 作为条件。",
+        "options": {
+          "off": "关闭",
+          "mask_refine": "遮罩精修"
+        }
+      },
+      "foreground_mask": {
+        "name": "前景先验",
+        "tooltip": "用于补回漏选像素的可选联合前景概率图，不定义逐人身份。"
+      },
+      "auto_download": {
+        "name": "自动下载",
+        "tooltip": "执行时下载目录清单中的缺失权重，验证 SHA256 并原子安装。"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "归属布局",
+        "tooltip": "归属布局"
+      },
+      "1": {
+        "name": "预览图",
+        "tooltip": "预览图"
+      },
+      "2": {
+        "name": "身份标签图",
+        "tooltip": "身份标签图"
+      },
+      "3": {
+        "name": "目标宽度",
+        "tooltip": "目标宽度"
+      },
+      "4": {
+        "name": "目标高度",
+        "tooltip": "目标高度"
+      },
+      "5": {
+        "name": "诊断报告",
+        "tooltip": "诊断报告"
+      }
+    }
+  },
+  "AnimaOwnershipEditor": {
+    "display_name": "Anima 归属编辑器",
+    "description": "清理离散归属标签，并通过持久化笔画编辑身份分配。",
+    "inputs": {
+      "layout": {
+        "name": "归属布局",
+        "tooltip": "包含空间归属遮罩、区域标识和接触边界的数据。"
+      },
+      "strokes_json": {
+        "name": "归属笔画",
+        "tooltip": "与当前参考布局绑定的归一化画笔笔画序列化数据。"
+      },
+      "island_pixels": {
+        "name": "孤岛面积阈值",
+        "tooltip": "作为孤立噪点移除的最大连通块面积；每个身份的最大连通块保留。"
+      },
+      "hole_pixels": {
+        "name": "封闭孔洞面积阈值",
+        "tooltip": "周围身份归属足够明确时允许填补的封闭背景区域最大面积。"
+      },
+      "smooth_radius": {
+        "name": "标签平滑半径",
+        "tooltip": "用于互斥身份标签竞争的高斯半径，单位为目标像素。"
+      },
+      "identity_names_json": {
+        "name": "身份名称",
+        "tooltip": "可选的区域标识与显示名称映射；名称不改变空间归属。"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "归属布局",
+        "tooltip": "归属布局"
+      },
+      "1": {
+        "name": "预览图",
+        "tooltip": "预览图"
+      },
+      "2": {
+        "name": "身份标签图",
+        "tooltip": "身份标签图"
+      },
+      "3": {
+        "name": "诊断报告",
+        "tooltip": "诊断报告"
+      },
+      "4": {
+        "name": "目标宽度"
+      },
+      "5": {
+        "name": "目标高度"
+      }
+    }
+  },
+  "AnimaIdentityMapImport": {
+    "display_name": "Anima 身份图导入",
+    "description": "将调色板编码的身份标签导入为空间归属布局。",
+    "inputs": {
+      "id_image": {
+        "name": "身份标签图",
+        "tooltip": "使用固定身份调色板编码的离散归属图；黑色或白色为背景。"
+      },
+      "canvas_width": {
+        "name": "画布宽度",
+        "tooltip": "目标图像宽度，单位为像素，必须为16的倍数。"
+      },
+      "canvas_height": {
+        "name": "画布高度",
+        "tooltip": "目标图像高度，单位为像素，必须为16的倍数。"
+      },
+      "expected_people": {
+        "name": "预期人数",
+        "tooltip": "导入身份图中应当出现的身份调色板数量。"
+      },
+      "contact_width": {
+        "name": "接触半径",
+        "tooltip": "用于标记相邻身份边界的目标图像像素半径。"
+      },
+      "reference": {
+        "name": "参考图像",
+        "tooltip": "与导入归属图关联的可选 RGB 参考图像。"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "归属布局",
+        "tooltip": "归属布局"
+      },
+      "1": {
+        "name": "身份标签图",
+        "tooltip": "身份标签图"
+      },
+      "2": {
+        "name": "目标宽度",
+        "tooltip": "目标宽度"
+      },
+      "3": {
+        "name": "目标高度",
+        "tooltip": "目标高度"
+      }
+    }
+  },
+  "AnimaIdentitySeeds": {
+    "display_name": "Anima 身份种子",
+    "description": "标注身份正种子和背景排除区域。",
+    "inputs": {
+      "image": {
+        "name": "参考图像",
+        "tooltip": "用于空间或分割参考的单张 RGB 图像。"
+      },
+      "canvas_width": {
+        "name": "画布宽度",
+        "tooltip": "目标图像宽度，单位为像素，必须为16的倍数。"
+      },
+      "canvas_height": {
+        "name": "画布高度",
+        "tooltip": "目标图像高度，单位为像素，必须为16的倍数。"
+      },
+      "expected_people": {
+        "name": "预期人数",
+        "tooltip": "零表示采用检测人数；正值在分割前核对人数。"
+      },
+      "strokes_json": {
+        "name": "归属笔画",
+        "tooltip": "与当前参考布局绑定的归一化画笔笔画序列化数据。"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "身份种子",
+        "tooltip": "身份种子"
+      },
+      "1": {
+        "name": "预览图",
+        "tooltip": "预览图"
+      },
+      "2": {
+        "name": "目标宽度",
+        "tooltip": "目标宽度"
+      },
+      "3": {
+        "name": "目标高度",
+        "tooltip": "目标高度"
+      },
+      "4": {
+        "name": "诊断报告",
+        "tooltip": "诊断报告"
+      }
+    }
+  },
+  "AnimaSeedSegment": {
+    "display_name": "Anima 种子分割",
+    "description": "使用 SAM2 与明确身份种子分配实例归属。",
+    "inputs": {
+      "image": {
+        "name": "参考图像",
+        "tooltip": "用于空间或分割参考的单张 RGB 图像。"
+      },
+      "seeds": {
+        "name": "身份种子",
+        "tooltip": "与同一参考绑定的逐身份正标签及可选背景排除区域。"
+      },
+      "sam2_checkpoint": {
+        "name": "SAM2权重",
+        "tooltip": "与已注册模型配置匹配的官方 SAM2.1 权重文件名。",
+        "options": {
+          "sam2.1_hiera_tiny.pt": "sam2.1_hiera_tiny.pt"
+        }
+      },
+      "analysis_resolution": {
+        "name": "分析分辨率",
+        "tooltip": "实例分割和边缘感知归属分配使用的最长边分辨率。"
+      },
+      "contact_width": {
+        "name": "接触半径",
+        "tooltip": "用于标记相邻身份边界的目标图像像素半径。"
+      },
+      "auto_download": {
+        "name": "自动下载",
+        "tooltip": "执行时下载目录清单中的缺失权重，验证 SHA256 并原子安装。"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "归属布局",
+        "tooltip": "归属布局"
+      },
+      "1": {
+        "name": "预览图",
+        "tooltip": "预览图"
+      },
+      "2": {
+        "name": "身份标签图",
+        "tooltip": "身份标签图"
+      },
+      "3": {
+        "name": "目标宽度",
+        "tooltip": "目标宽度"
+      },
+      "4": {
+        "name": "目标高度",
+        "tooltip": "目标高度"
+      },
+      "5": {
+        "name": "诊断报告",
+        "tooltip": "诊断报告"
+      }
+    }
+  },
+  "AnimaLayoutControl": {
+    "display_name": "Anima 布局控制图",
+    "description": "从归属标签提取结构控制图和效果遮罩。",
+    "inputs": {
+      "layout": {
+        "name": "归属布局",
+        "tooltip": "包含空间归属遮罩、区域标识和接触边界的数据。"
+      },
+      "mode": {
+        "name": "控制表示",
+        "tooltip": "从归属标签生成轮廓或身份色块控制表示。",
+        "options": {
+          "outline": "轮廓控制",
+          "region_color": "区域色块"
+        }
+      },
+      "smooth_pixels": {
+        "name": "边界平滑",
+        "tooltip": "提取控制几何前平滑离散归属边界的像素半径。"
+      },
+      "line_width": {
+        "name": "轮廓线宽",
+        "tooltip": "提取轮廓表示的输出像素线宽。"
+      },
+      "effect_margin": {
+        "name": "效果外扩边距",
+        "tooltip": "前景控制效果遮罩的像素膨胀距离。"
+      },
+      "release_mask": {
+        "name": "控制释放遮罩",
+        "tooltip": "白色像素在局部抑制结构控制，不改变身份归属。"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "控制图像",
+        "tooltip": "控制图像"
+      },
+      "1": {
+        "name": "效果遮罩",
+        "tooltip": "效果遮罩"
+      }
+    }
+  },
+  "AnimaContactLLLiteApply": {
+    "display_name": "Anima 区域轻量控制",
+    "description": "向区域管线应用具有时间表的结构残差。",
+    "inputs": {
+      "pipeline": {
+        "name": "区域管线",
+        "tooltip": "包含原始模型、身份、归属布局和运行设置的单个采样阶段管线。"
+      },
+      "control": {
+        "name": "LLLite控制模型",
+        "tooltip": "与输入控制表示匹配的已加载 Anima LLLite 权重。"
+      },
+      "image": {
+        "name": "参考图像",
+        "tooltip": "用于空间或分割参考的单张 RGB 图像。"
+      },
+      "strength": {
+        "name": "控制强度",
+        "tooltip": "结构控制在有效扩散区间内的残差倍率。"
+      },
+      "start_percent": {
+        "name": "控制起点",
+        "tooltip": "模型完整扩散时间表上的控制起始位置。"
+      },
+      "end_percent": {
+        "name": "控制终点",
+        "tooltip": "模型完整扩散时间表上的控制结束位置。"
+      },
+      "fade_out": {
+        "name": "渐退区间",
+        "tooltip": "控制强度在末段下降至零所使用的时间表区间长度。"
+      },
+      "second_pass_strength": {
+        "name": "后续阶段控制强度",
+        "tooltip": "重建后续采样阶段时明确保留的控制强度。"
+      },
+      "effect_mask": {
+        "name": "控制效果遮罩",
+        "tooltip": "白色保留结构控制，黑色关闭结构控制；与身份门控独立。"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "区域模型",
+        "tooltip": "区域模型"
+      },
+      "1": {
+        "name": "区域管线",
+        "tooltip": "区域管线"
+      },
+      "2": {
+        "name": "诊断报告",
+        "tooltip": "诊断报告"
+      }
+    }
+  },
+  "AnimaTileUpscale": {
+    "display_name": "Anima Tile放大",
+    "description": "缩放生成的 RGB 内容、重新编码潜空间并准备 Tile 引导精修。",
+    "inputs": {
+      "pipeline": {
+        "name": "区域管线",
+        "tooltip": "包含原始模型、身份、归属布局和运行设置的单个采样阶段管线。"
+      },
+      "samples": {
+        "name": "潜空间样本",
+        "tooltip": "与输入管线关联的采样阶段产生的潜空间样本。"
+      },
+      "vae": {
+        "name": "VAE",
+        "tooltip": "用于像素空间缩放和潜空间重建的兼容编码器与解码器。"
+      },
+      "tile_control": {
+        "name": "Tile控制模型",
+        "tooltip": "与生成 RGB 内容共同使用的 Anima TileRepair 控制权重。"
+      },
+      "scale_factor": {
+        "name": "放大倍率",
+        "tooltip": "图像空间缩放倍率；目标尺寸对齐模型 patch 网格。"
+      },
+      "tile_strength": {
+        "name": "Tile强度",
+        "tooltip": "生成图像 Tile 条件的残差控制倍率。"
+      },
+      "start_percent": {
+        "name": "控制起点",
+        "tooltip": "模型完整扩散时间表上的控制起始位置。"
+      },
+      "end_percent": {
+        "name": "控制终点",
+        "tooltip": "模型完整扩散时间表上的控制结束位置。"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "区域模型",
+        "tooltip": "区域模型"
+      },
+      "1": {
+        "name": "潜空间样本",
+        "tooltip": "潜空间样本"
+      },
+      "2": {
+        "name": "区域管线",
+        "tooltip": "区域管线"
+      },
+      "3": {
+        "name": "控制图像",
+        "tooltip": "控制图像"
+      },
+      "4": {
+        "name": "目标宽度",
+        "tooltip": "目标宽度"
+      },
+      "5": {
+        "name": "目标高度",
+        "tooltip": "目标高度"
+      },
+      "6": {
+        "name": "诊断报告",
+        "tooltip": "诊断报告"
+      }
+    }
+  },
+  "AnimaRegionalInspect": {
+    "display_name": "Anima 区域诊断",
+    "description": "采样后检查空间门控和运行时适配器活动。",
+    "inputs": {
+      "pipeline": {
+        "name": "区域管线",
+        "tooltip": "包含原始模型、身份、归属布局和运行设置的单个采样阶段管线。"
+      },
+      "samples": {
+        "name": "潜空间样本",
+        "tooltip": "与输入管线关联的采样阶段产生的潜空间样本。"
+      },
+      "image": {
+        "name": "参考图像",
+        "tooltip": "用于空间或分割参考的单张 RGB 图像。"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "预览图",
+        "tooltip": "预览图"
+      },
+      "1": {
+        "name": "诊断报告",
+        "tooltip": "诊断报告"
+      }
+    }
+  },
+  "AnimaForeground": {
+    "display_name": "Anima 前景分割",
+    "description": "使用 ISNet、ToonOut 或概率集成预测联合前景。",
+    "inputs": {
+      "image": {
+        "name": "参考图像",
+        "tooltip": "用于空间或分割参考的单张 RGB 图像。"
+      },
+      "backend": {
+        "name": "前景模型",
+        "tooltip": "前景模型或模型集成；输出不含实例标识的联合前景遮罩。",
+        "options": {
+          "isnet": "ISNet",
+          "toonout": "ToonOut",
+          "ensemble": "多模型集成"
+        }
+      },
+      "auto_download": {
+        "name": "自动下载",
+        "tooltip": "执行时下载目录清单中的缺失权重，验证 SHA256 并原子安装。"
+      },
+      "fusion": {
+        "name": "遮罩融合",
+        "tooltip": "共识使用几何平均，覆盖使用最大值，交集使用最小概率。",
+        "options": {
+          "consensus": "共识",
+          "coverage": "覆盖"
+        }
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "前景遮罩",
+        "tooltip": "前景遮罩"
+      },
+      "1": {
+        "name": "预览图",
+        "tooltip": "预览图"
+      },
+      "2": {
+        "name": "诊断报告",
+        "tooltip": "诊断报告"
+      }
+    }
+  },
+  "AnimaMaskCombine": {
+    "display_name": "Anima 遮罩融合",
+    "description": "融合来自独立分割模型的对齐前景概率遮罩。",
+    "inputs": {
+      "mask_a": {
+        "name": "第一遮罩",
+        "tooltip": "取值为零到一的第一张前景概率遮罩。"
+      },
+      "mask_b": {
+        "name": "第二遮罩",
+        "tooltip": "第二张前景概率遮罩；融合前缩放到第一张遮罩的尺寸。"
+      },
+      "fusion": {
+        "name": "遮罩融合",
+        "tooltip": "共识使用几何平均，覆盖使用最大值，交集使用最小概率。",
+        "options": {
+          "consensus": "共识",
+          "coverage": "覆盖",
+          "intersection": "交集"
+        }
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "前景遮罩",
+        "tooltip": "前景遮罩"
+      }
+    }
+  },
+  "AnimaLLLiteLoader": {
+    "display_name": "Anima LLLite加载器",
+    "description": "加载已验证的 Anima 结构或 Tile 控制权重。",
+    "inputs": {
+      "model_name": {
+        "name": "模型预设",
+        "tooltip": "具有固定来源版本、安装目录和 SHA256 校验值的模型预设。",
+        "options": {
+          "outline": "轮廓控制",
+          "regional": "区域模式",
+          "tile": "TileRepair"
+        }
+      },
+      "auto_download": {
+        "name": "自动下载",
+        "tooltip": "执行时下载目录清单中的缺失权重，验证 SHA256 并原子安装。"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "控制权重",
+        "tooltip": "控制权重"
+      },
+      "1": {
+        "name": "诊断报告",
+        "tooltip": "诊断报告"
+      }
+    }
+  },
+  "AnimaModelDownload": {
+    "display_name": "Anima 模型下载",
+    "description": "安装目录清单中的模型，并执行固定来源版本的完整性验证。",
+    "inputs": {
+      "model_name": {
+        "name": "模型预设",
+        "tooltip": "具有固定来源版本、安装目录和 SHA256 校验值的模型预设。",
+        "options": {
+          "isnet": "ISNet",
+          "toonout": "ToonOut",
+          "detector-small": "二次元检测-轻量",
+          "detector-medium": "二次元检测-中型",
+          "sam2-tiny": "SAM2.1 Tiny",
+          "outline": "轮廓控制",
+          "regional": "区域模式",
+          "tile": "TileRepair"
+        }
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "模型路径",
+        "tooltip": "模型路径"
+      }
+    }
+  },
+  "AnimaContactSAM3Segment": {
+    "display_name": "Anima SAM3 语义分割",
+    "description": "通过概念短语分割全部匹配实例，保留预测掩码，对重复查询去重并按空间顺序分配稳定归属标识。",
+    "inputs": {
+      "image": {
+        "name": "参考图像",
+        "tooltip": "根据概念提示进行分割的单张 RGB 图像。"
+      },
+      "semantic_mode": {
+        "name": "语义模式",
+        "tooltip": "自动模式依次探测 person、girl、boy 并对实例掩码去重；自定义模式使用输入短语。这是概念探测，不是自动图像描述。",
+        "options": {
+          "automatic": "自动人物语义",
+          "custom": "自定义语义"
+        }
+      },
+      "semantic_text": {
+        "name": "语义短语",
+        "tooltip": "自定义模式使用的简短概念短语，每行一条；每条短语可以返回多个实例。"
+      },
+      "expected_people": {
+        "name": "预期实例数",
+        "tooltip": "0 接受实际数量；正数核对结果数量，不虚构或截断实例。"
+      },
+      "confidence": {
+        "name": "实例置信阈值",
+        "tooltip": "SAM3 目标存在性与检测评分计算后的最低实例置信度。"
+      },
+      "mask_threshold": {
+        "name": "掩码阈值",
+        "tooltip": "官方实例后处理用于区分前景的概率阈值。"
+      },
+      "nms_iou": {
+        "name": "重复掩码 IoU",
+        "tooltip": "跨语义查询抑制重复实例的掩码 IoU 阈值；较大数值保留更多重叠目标。"
+      },
+      "minimum_pixels": {
+        "name": "最小实例像素",
+        "tooltip": "移除在原图中像素数小于此值的实例掩码。"
+      },
+      "canvas_width": {
+        "name": "画布宽度",
+        "tooltip": "布局输出宽度，须为 16 的倍数；保持参考图比例可避免拉伸。"
+      },
+      "canvas_height": {
+        "name": "画布高度",
+        "tooltip": "布局输出高度，须为 16 的倍数。"
+      },
+      "contact_width": {
+        "name": "接触带宽度",
+        "tooltip": "以目标画布像素计算的边界接触半径，不改变预测的实例轮廓。"
+      },
+      "device": {
+        "name": "运行设备",
+        "tooltip": "自动模式跟随 ComfyUI 设备；CPU 使用 float32，CUDA 使用 float16；推理结束后释放模型。",
+        "options": {
+          "auto": "自动",
+          "cuda": "CUDA",
+          "cpu": "CPU"
+        }
+      },
+      "auto_download": {
+        "name": "自动下载",
+        "tooltip": "从公开的 bodhicitta/sam3 仓库下载固定修订的 Transformers 权重与配置，并核对上游一致的校验值；无需 Hugging Face 登录。"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "人物布局"
+      },
+      "1": {
+        "name": "归属预览"
+      },
+      "2": {
+        "name": "身份图"
+      },
+      "3": {
+        "name": "联合前景"
+      },
+      "4": {
+        "name": "实际数量"
+      },
+      "5": {
+        "name": "诊断报告"
+      }
+    }
+  },
+  "AnimaContactAnimeDetectV7": {
+    "display_name": "Anima 人物检测",
+    "description": "检测二次元人物实例并分配确定的空间标识。",
+    "inputs": {
+      "image": {
+        "name": "参考图像",
+        "tooltip": "用于空间或分割参考的单张 RGB 图像。"
+      },
+      "detector": {
+        "name": "人物检测模型",
+        "tooltip": "已注册模型目录中的二次元人物检测模型文件名。",
+        "options": {
+          "person_detect_v1.3_s.onnx": "person_detect_v1.3_s.onnx",
+          "person_detect_v1.1_m.onnx": "person_detect_v1.1_m.onnx"
+        }
+      },
+      "expected_people": {
+        "name": "预期人数",
+        "tooltip": "零表示采用检测人数；正值在分割前核对人数。"
+      },
+      "confidence": {
+        "name": "检测阈值",
+        "tooltip": "非极大值抑制前接受的人物检测最低置信度。"
+      },
+      "nms_iou": {
+        "name": "NMS交并比",
+        "tooltip": "用于抑制重复人物框的交并比阈值。"
+      },
+      "resolution": {
+        "name": "检测分辨率",
+        "tooltip": "动态输入形状检测模型使用的空间分辨率。"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "人物检测记录",
+        "tooltip": "人物检测记录"
+      },
+      "1": {
+        "name": "预览图",
+        "tooltip": "预览图"
+      },
+      "2": {
+        "name": "实际人数",
+        "tooltip": "实际人数"
+      },
+      "3": {
+        "name": "诊断报告",
+        "tooltip": "诊断报告"
+      }
+    }
+  },
+  "AnimaContactAnimeRegionsV7": {
+    "display_name": "Anima 实例分割",
+    "description": "结合检测框、SAM2 与可选前景先验分配可见像素。",
+    "inputs": {
+      "image": {
+        "name": "参考图像",
+        "tooltip": "用于空间或分割参考的单张 RGB 图像。"
+      },
+      "people": {
+        "name": "人物检测记录",
+        "tooltip": "已验证的人物检测框及其源图像关联信息。"
+      },
+      "sam2_checkpoint": {
+        "name": "SAM2权重",
+        "tooltip": "与已注册模型配置匹配的官方 SAM2.1 权重文件名。",
+        "options": {
+          "sam2.1_hiera_tiny.pt": "sam2.1_hiera_tiny.pt"
+        }
+      },
+      "canvas_width": {
+        "name": "画布宽度",
+        "tooltip": "目标图像宽度，单位为像素，必须为16的倍数。"
+      },
+      "canvas_height": {
+        "name": "画布高度",
+        "tooltip": "目标图像高度，单位为像素，必须为16的倍数。"
+      },
+      "analysis_resolution": {
+        "name": "分析分辨率",
+        "tooltip": "实例分割和边缘感知归属分配使用的最长边分辨率。"
+      },
+      "contact_width": {
+        "name": "接触半径",
+        "tooltip": "用于标记相邻身份边界的目标图像像素半径。"
+      },
+      "manual_seeds": {
+        "name": "身份种子",
+        "tooltip": "用于约束实例分割的可选身份正标注和背景标注。"
+      },
+      "foreground_model": {
+        "name": "联合前景来源",
+        "tooltip": "兼容接口的可选联合前景来源，不负责分配人物身份。"
+      },
+      "refinement": {
+        "name": "遮罩精修",
+        "tooltip": "可选的第二次 SAM2 预测，使用已选低分辨率遮罩 logits 作为条件。",
+        "options": {
+          "off": "关闭",
+          "mask_refine": "遮罩精修"
+        }
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "归属布局",
+        "tooltip": "归属布局"
+      },
+      "1": {
+        "name": "预览图",
+        "tooltip": "预览图"
+      },
+      "2": {
+        "name": "身份标签图",
+        "tooltip": "身份标签图"
+      },
+      "3": {
+        "name": "目标宽度",
+        "tooltip": "目标宽度"
+      },
+      "4": {
+        "name": "目标高度",
+        "tooltip": "目标高度"
+      },
+      "5": {
+        "name": "诊断报告",
+        "tooltip": "诊断报告"
+      }
+    }
+  },
+  "AnimaContactApplyV9": {
+    "display_name": "Anima 区域路由",
+    "description": "构建空间文本与适配器残差路由，同时保留共享模型基线。",
+    "inputs": {
+      "model": {
+        "name": "模型",
+        "tooltip": "用于构建区域采样管线的原始扩散模型。"
+      },
+      "layout": {
+        "name": "归属布局",
+        "tooltip": "包含空间归属遮罩、区域标识和接触边界的数据。"
+      },
+      "identity_strength": {
+        "name": "身份文本强度",
+        "tooltip": "区域文本相对共享条件基线的残差全局倍率。"
+      },
+      "cross_lora_strength": {
+        "name": "交叉注意力LoRA强度",
+        "tooltip": "交叉注意力适配器残差的全局倍率，不缩放身份文本残差。"
+      },
+      "self_kv_mode": {
+        "name": "自注意力K/V策略",
+        "tooltip": "是否让区域适配器影响自注意力的键和值投影。",
+        "options": {
+          "regional": "区域模式",
+          "base": "底模模式"
+        }
+      },
+      "overlap_mode": {
+        "name": "重叠分配",
+        "tooltip": "用于分配被多个归属区域覆盖的 token 的策略。",
+        "options": {
+          "nearest": "最近归属",
+          "soft": "柔性混合"
+        }
+      },
+      "contact_lora_release": {
+        "name": "接触区适配器释放",
+        "tooltip": "在接触边界内移除的适配器影响比例；身份文本仍保持有效。"
+      },
+      "adaptive_mode": {
+        "name": "自适应归属",
+        "tooltip": "可选的基于注意力的归属精修，需要明确空间先验。",
+        "options": {
+          "off": "关闭",
+          "refine": "精修"
+        }
+      },
+      "adaptive_calls": {
+        "name": "观测调用数",
+        "tooltip": "用于自适应归属观测的初始模型前向调用次数。"
+      },
+      "adaptive_blend": {
+        "name": "自适应混合比例",
+        "tooltip": "观测亲和度与输入归属先验之间的插值权重。"
+      },
+      "self_attention_mode": {
+        "name": "自注意力路由",
+        "tooltip": "区域适配器采用局部输出残差路由或共享投影路由。",
+        "options": {
+          "local_output": "局部输出",
+          "shared_projection": "共享投影"
+        }
+      },
+      "cfg_lora_mode": {
+        "name": "CFG适配器分支",
+        "tooltip": "适配器作用于两个引导分支或仅条件分支；不替换负面文本。",
+        "options": {
+          "both": "正负分支",
+          "positive_only": "仅正面分支"
+        }
+      },
+      "gate_mode": {
+        "name": "门控归一化",
+        "tooltip": "分区门控在独占归属分配后保留已覆盖 token 的幅度。",
+        "options": {
+          "partition": "分区归一化",
+          "legacy": "兼容归一化"
+        }
+      },
+      "roles": {
+        "name": "身份列表",
+        "tooltip": "分配到当前采样管线的有效身份分支。"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "区域模型",
+        "tooltip": "区域模型"
+      },
+      "1": {
+        "name": "区域管线",
+        "tooltip": "区域管线"
+      },
+      "2": {
+        "name": "诊断报告",
+        "tooltip": "诊断报告"
+      }
+    }
+  },
+  "AnimaContactInspectV5": {
+    "display_name": "Anima 区域诊断",
+    "description": "采样后检查空间门控和运行时适配器活动。",
+    "inputs": {
+      "pipeline": {
+        "name": "区域管线",
+        "tooltip": "包含原始模型、身份、归属布局和运行设置的单个采样阶段管线。"
+      },
+      "samples": {
+        "name": "潜空间样本",
+        "tooltip": "与输入管线关联的采样阶段产生的潜空间样本。"
+      },
+      "image": {
+        "name": "参考图像",
+        "tooltip": "用于空间或分割参考的单张 RGB 图像。"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "预览图",
+        "tooltip": "预览图"
+      },
+      "1": {
+        "name": "诊断报告",
+        "tooltip": "诊断报告"
+      }
+    }
+  },
+  "AnimaContactLLLiteApplyV7": {
+    "display_name": "Anima 区域轻量控制",
+    "description": "向区域管线应用具有时间表的结构残差。",
+    "inputs": {
+      "pipeline": {
+        "name": "区域管线",
+        "tooltip": "包含原始模型、身份、归属布局和运行设置的单个采样阶段管线。"
+      },
+      "control": {
+        "name": "LLLite控制模型",
+        "tooltip": "与输入控制表示匹配的已加载 Anima LLLite 权重。"
+      },
+      "image": {
+        "name": "参考图像",
+        "tooltip": "用于空间或分割参考的单张 RGB 图像。"
+      },
+      "strength": {
+        "name": "控制强度",
+        "tooltip": "结构控制在有效扩散区间内的残差倍率。"
+      },
+      "start_percent": {
+        "name": "控制起点",
+        "tooltip": "模型完整扩散时间表上的控制起始位置。"
+      },
+      "end_percent": {
+        "name": "控制终点",
+        "tooltip": "模型完整扩散时间表上的控制结束位置。"
+      },
+      "fade_out": {
+        "name": "渐退区间",
+        "tooltip": "控制强度在末段下降至零所使用的时间表区间长度。"
+      },
+      "second_pass_strength": {
+        "name": "后续阶段控制强度",
+        "tooltip": "重建后续采样阶段时明确保留的控制强度。"
+      },
+      "effect_mask": {
+        "name": "控制效果遮罩",
+        "tooltip": "白色保留结构控制，黑色关闭结构控制；与身份门控独立。"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "区域模型",
+        "tooltip": "区域模型"
+      },
+      "1": {
+        "name": "区域管线",
+        "tooltip": "区域管线"
+      },
+      "2": {
+        "name": "诊断报告",
+        "tooltip": "诊断报告"
+      }
+    }
+  },
+  "AnimaContactLLLiteModelV7": {
+    "display_name": "Anima LLLite加载器",
+    "description": "加载已验证的 Anima 结构或 Tile 控制权重。",
+    "inputs": {
+      "model_name": {
+        "name": "模型文件",
+        "tooltip": "已注册控制目录中的权重；已知预设缺失时自动下载。",
+        "options": {
+          "outline": "轮廓控制",
+          "regional": "区域模式",
+          "tile": "TileRepair"
+        }
+      },
+      "profile": {
+        "name": "架构配置",
+        "tooltip": "验证轻量控制权重结构的架构配置。"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "控制权重",
+        "tooltip": "控制权重"
+      },
+      "1": {
+        "name": "诊断报告",
+        "tooltip": "诊断报告"
+      }
+    }
+  },
+  "AnimaContactLayoutControlV7": {
+    "display_name": "Anima 布局控制图",
+    "description": "从归属标签提取结构控制图和效果遮罩。",
+    "inputs": {
+      "layout": {
+        "name": "归属布局",
+        "tooltip": "包含空间归属遮罩、区域标识和接触边界的数据。"
+      },
+      "mode": {
+        "name": "控制表示",
+        "tooltip": "从归属标签生成轮廓或身份色块控制表示。",
+        "options": {
+          "outline": "轮廓控制",
+          "region_color": "区域色块"
+        }
+      },
+      "smooth_pixels": {
+        "name": "边界平滑",
+        "tooltip": "提取控制几何前平滑离散归属边界的像素半径。"
+      },
+      "line_width": {
+        "name": "轮廓线宽",
+        "tooltip": "提取轮廓表示的输出像素线宽。"
+      },
+      "effect_margin": {
+        "name": "效果外扩边距",
+        "tooltip": "前景控制效果遮罩的像素膨胀距离。"
+      },
+      "release_mask": {
+        "name": "控制释放遮罩",
+        "tooltip": "白色像素在局部抑制结构控制，不改变身份归属。"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "控制图像",
+        "tooltip": "控制图像"
+      },
+      "1": {
+        "name": "效果遮罩",
+        "tooltip": "效果遮罩"
+      }
+    }
+  },
+  "AnimaContactRegionsPaintV9": {
+    "display_name": "Anima 归属编辑器",
+    "description": "清理离散归属标签，并通过持久化笔画编辑身份分配。",
+    "inputs": {
+      "layout": {
+        "name": "归属布局",
+        "tooltip": "包含空间归属遮罩、区域标识和接触边界的数据。"
+      },
+      "strokes_json": {
+        "name": "归属笔画",
+        "tooltip": "与当前参考布局绑定的归一化画笔笔画序列化数据。"
+      },
+      "island_pixels": {
+        "name": "孤岛面积阈值",
+        "tooltip": "作为孤立噪点移除的最大连通块面积；每个身份的最大连通块保留。"
+      },
+      "hole_pixels": {
+        "name": "封闭孔洞面积阈值",
+        "tooltip": "周围身份归属足够明确时允许填补的封闭背景区域最大面积。"
+      },
+      "smooth_radius": {
+        "name": "标签平滑半径",
+        "tooltip": "用于互斥身份标签竞争的高斯半径，单位为目标像素。"
+      },
+      "identity_names_json": {
+        "name": "身份名称",
+        "tooltip": "可选的区域标识与显示名称映射；名称不改变空间归属。"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "归属布局",
+        "tooltip": "归属布局"
+      },
+      "1": {
+        "name": "预览图",
+        "tooltip": "预览图"
+      },
+      "2": {
+        "name": "身份标签图",
+        "tooltip": "身份标签图"
+      },
+      "3": {
+        "name": "诊断报告",
+        "tooltip": "诊断报告"
+      }
+    }
+  },
+  "AnimaContactRoleV9": {
+    "display_name": "Anima 身份条件",
+    "description": "将区域文本和可选局部 MODEL 适配器绑定到归属标识。",
+    "inputs": {
+      "clip": {
+        "name": "文本编码器",
+        "tooltip": "用于编码共享和区域条件的 Anima 兼容文本编码器。"
+      },
+      "layout": {
+        "name": "归属布局",
+        "tooltip": "包含空间归属遮罩、区域标识和接触边界的数据。"
+      },
+      "scene_text": {
+        "name": "共享场景文本",
+        "tooltip": "与每个身份描述共同编码的共享语义上下文。"
+      },
+      "char_id": {
+        "name": "区域标识",
+        "tooltip": "将身份条件分支与归属区域关联的标识，与显示名称无关。",
+        "options": {
+          "char1": "char1",
+          "char2": "char2",
+          "char3": "char3",
+          "char4": "char4",
+          "char5": "char5",
+          "char6": "char6",
+          "char7": "char7",
+          "char8": "char8",
+          "char9": "char9",
+          "char10": "char10",
+          "char11": "char11",
+          "char12": "char12",
+          "char13": "char13",
+          "char14": "char14",
+          "char15": "char15",
+          "char16": "char16"
+        }
+      },
+      "identity_prompt": {
+        "name": "身份条件",
+        "tooltip": "单个区域条件分支的外观、服装和辨识属性。"
+      },
+      "edge_softness": {
+        "name": "Token羽化半径",
+        "tooltip": "以模型图像 token 为单位的归属门控平滑半径；增大后边界特异性降低。"
+      },
+      "identity_gain": {
+        "name": "身份文本增益",
+        "tooltip": "当前身份条件残差的倍率，与 LoRA 倍率相互独立。"
+      },
+      "self_q_out_gain": {
+        "name": "自注意力Q与输出增益",
+        "tooltip": "局部 LoRA 在自注意力查询和输出投影上的增量倍率。"
+      },
+      "self_kv_gain": {
+        "name": "自注意力K/V增益",
+        "tooltip": "局部 LoRA 在自注意力键和值投影上的增量倍率。"
+      },
+      "cross_gain": {
+        "name": "交叉注意力增益",
+        "tooltip": "当前身份受支持交叉注意力 LoRA 增量的倍率。"
+      },
+      "mlp_gain": {
+        "name": "MLP增益",
+        "tooltip": "局部 LoRA 在受支持前馈网络投影上的增量倍率。"
+      },
+      "lora_stack_json": {
+        "name": "局部LoRA组",
+        "tooltip": "包含独立开关和倍率的局部 MODEL 适配器序列化数据；空组使用底模。"
+      },
+      "previous_roles": {
+        "name": "前序身份",
+        "tooltip": "由此节点扩展的可选身份链。"
+      },
+      "scene_policy": {
+        "name": "场景基线策略",
+        "tooltip": "用于一致计算身份残差的共享无画风参考条件。"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "身份列表",
+        "tooltip": "身份列表"
+      }
+    }
+  },
+  "AnimaContactSceneV9": {
+    "display_name": "Anima 场景条件",
+    "description": "编码共享场景、全局画风与负面条件。",
+    "inputs": {
+      "clip": {
+        "name": "文本编码器",
+        "tooltip": "用于编码共享和区域条件的 Anima 兼容文本编码器。"
+      },
+      "scene_prompt": {
+        "name": "共享场景",
+        "tooltip": "由所有身份共享的构图、交互、环境和镜头条件。"
+      },
+      "quality_prompt": {
+        "name": "全局画风与质量",
+        "tooltip": "作用于全局基线并与身份残差分离的画风和质量条件。"
+      },
+      "negative_prompt": {
+        "name": "负面条件",
+        "tooltip": "用于无分类器引导的全局负面条件。"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "正面条件",
+        "tooltip": "正面条件"
+      },
+      "1": {
+        "name": "负面条件",
+        "tooltip": "负面条件"
+      },
+      "2": {
+        "name": "共享场景文本",
+        "tooltip": "共享场景文本"
+      },
+      "3": {
+        "name": "场景基线策略",
+        "tooltip": "场景基线策略"
+      }
+    }
+  },
+  "AnimaContactTileHiresV8": {
+    "display_name": "Anima Tile放大",
+    "description": "缩放生成的 RGB 内容、重新编码潜空间并准备 Tile 引导精修。",
+    "inputs": {
+      "pipeline": {
+        "name": "区域管线",
+        "tooltip": "包含原始模型、身份、归属布局和运行设置的单个采样阶段管线。"
+      },
+      "samples": {
+        "name": "潜空间样本",
+        "tooltip": "与输入管线关联的采样阶段产生的潜空间样本。"
+      },
+      "vae": {
+        "name": "VAE",
+        "tooltip": "用于像素空间缩放和潜空间重建的兼容编码器与解码器。"
+      },
+      "tile_control": {
+        "name": "Tile控制模型",
+        "tooltip": "与生成 RGB 内容共同使用的 Anima TileRepair 控制权重。"
+      },
+      "scale_factor": {
+        "name": "放大倍率",
+        "tooltip": "图像空间缩放倍率；目标尺寸对齐模型 patch 网格。"
+      },
+      "tile_strength": {
+        "name": "Tile强度",
+        "tooltip": "生成图像 Tile 条件的残差控制倍率。"
+      },
+      "start_percent": {
+        "name": "控制起点",
+        "tooltip": "模型完整扩散时间表上的控制起始位置。"
+      },
+      "end_percent": {
+        "name": "控制终点",
+        "tooltip": "模型完整扩散时间表上的控制结束位置。"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "区域模型",
+        "tooltip": "区域模型"
+      },
+      "1": {
+        "name": "潜空间样本",
+        "tooltip": "潜空间样本"
+      },
+      "2": {
+        "name": "区域管线",
+        "tooltip": "区域管线"
+      },
+      "3": {
+        "name": "控制图像",
+        "tooltip": "控制图像"
+      },
+      "4": {
+        "name": "目标宽度",
+        "tooltip": "目标宽度"
+      },
+      "5": {
+        "name": "目标高度",
+        "tooltip": "目标高度"
+      },
+      "6": {
+        "name": "诊断报告",
+        "tooltip": "诊断报告"
+      }
+    }
+  },
+  "AnimaContactTileModelV8": {
+    "display_name": "Anima LLLite加载器",
+    "description": "加载已验证的 Anima 结构或 Tile 控制权重。",
+    "inputs": {
+      "model_name": {
+        "name": "模型文件",
+        "tooltip": "已注册控制目录中的权重；已知预设缺失时自动下载。",
+        "options": {
+          "outline": "轮廓控制",
+          "regional": "区域模式",
+          "tile": "TileRepair"
+        }
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "控制权重",
+        "tooltip": "控制权重"
+      },
+      "1": {
+        "name": "诊断报告",
+        "tooltip": "诊断报告"
+      }
+    }
+  },
+  "AnimaContactForegroundOwnership": {
+    "display_name": "Anima 前景身份分区",
+    "description": "通过图像边缘感知的测地距离，将联合前景分配给明确身份种子；不加载 SAM 或人物检测模型。",
+    "inputs": {
+      "image": {
+        "name": "参考图像",
+        "tooltip": "与前景遮罩及身份种子对应的单张 RGB 参考图。"
+      },
+      "foreground_mask": {
+        "name": "联合前景遮罩",
+        "tooltip": "前景概率图，只表示主体覆盖范围，不包含逐人身份标签。"
+      },
+      "seeds": {
+        "name": "身份种子",
+        "tooltip": "来自同一参考图与画布的身份正种子及可选背景标注。"
+      },
+      "analysis_resolution": {
+        "name": "分析分辨率",
+        "tooltip": "归属分析长边；更大数值保留更细轮廓，同时增加 CPU 耗时及内存占用。"
+      },
+      "mask_threshold": {
+        "name": "前景阈值",
+        "tooltip": "分配前景所用的概率阈值，明确身份种子受到保护。"
+      },
+      "edge_weight": {
+        "name": "边界权重",
+        "tooltip": "前景概率变化的测地路径代价倍率，RGB 亮度边缘也约束归属传播。"
+      },
+      "contact_width": {
+        "name": "接触带宽度",
+        "tooltip": "以目标画布像素计算的身份接触边界半径。"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "人物布局"
+      },
+      "1": {
+        "name": "归属预览"
+      },
+      "2": {
+        "name": "身份图"
+      },
+      "3": {
+        "name": "诊断报告"
+      }
+    }
+  }
+}

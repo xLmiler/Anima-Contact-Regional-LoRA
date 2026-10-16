@@ -1,0 +1,1584 @@
+{
+  "AnimaRegionCanvas": {
+    "inputs": {
+      "required": {
+        "canvas_width": [
+          "INT",
+          {
+            "default": 1024,
+            "tooltip": "Target image width in pixels; must be divisible by 16.",
+            "min": 64,
+            "max": 8192,
+            "step": 16
+          }
+        ],
+        "canvas_height": [
+          "INT",
+          {
+            "default": 1024,
+            "tooltip": "Target image height in pixels; must be divisible by 16.",
+            "min": 64,
+            "max": 8192,
+            "step": 16
+          }
+        ],
+        "layout_json": [
+          "STRING",
+          {
+            "default": "{\"version\":1,\"characters\":[{\"id\":\"char1\",\"label\":\"char1\"},{\"id\":\"char2\",\"label\":\"char2\"}],\"regions\":[{\"id\":\"a-body\",\"kind\":\"body\",\"char_id\":\"char1\",\"x\":0.06,\"y\":0.04,\"w\":0.5,\"h\":0.92},{\"id\":\"b-body\",\"kind\":\"body\",\"char_id\":\"char2\",\"x\":0.44,\"y\":0.04,\"w\":0.5,\"h\":0.92},{\"id\":\"a-face\",\"kind\":\"face\",\"char_id\":\"char1\",\"x\":0.16,\"y\":0.025,\"w\":0.36,\"h\":0.4},{\"id\":\"b-face\",\"kind\":\"face\",\"char_id\":\"char2\",\"x\":0.5,\"y\":0.025,\"w\":0.36,\"h\":0.4},{\"id\":\"contact\",\"kind\":\"contact\",\"char_id\":\"\",\"x\":0.43,\"y\":0.4,\"w\":0.14,\"h\":0.38}]}",
+            "tooltip": "Normalized body, face, ownership and contact geometry maintained by the visual editor.",
+            "multiline": true
+          }
+        ]
+      }
+    },
+    "outputs": [
+      "ANIMA_LAYOUT",
+      "IMAGE",
+      "INT",
+      "INT"
+    ],
+    "function": "make",
+    "category": "Anima Contact/Masks",
+    "display_name": "Anima Region Canvas",
+    "description": "Edit normalized spatial ownership geometry.",
+    "output_names": [
+      "layout",
+      "preview",
+      "width",
+      "height"
+    ]
+  },
+  "AnimaSceneConditioning": {
+    "inputs": {
+      "required": {
+        "clip": [
+          "CLIP",
+          {
+            "tooltip": "Anima-compatible text encoder used to encode shared and regional conditioning."
+          }
+        ],
+        "scene_prompt": [
+          "STRING",
+          {
+            "default": "",
+            "tooltip": "Scene-level composition, interaction, environment and camera conditioning shared by all identities.",
+            "multiline": true
+          }
+        ],
+        "quality_prompt": [
+          "STRING",
+          {
+            "default": "",
+            "tooltip": "Style and quality conditioning applied to the global baseline, separate from identity residuals.",
+            "multiline": true
+          }
+        ],
+        "negative_prompt": [
+          "STRING",
+          {
+            "default": "worst quality, low quality, bad anatomy, extra limbs, fused bodies",
+            "tooltip": "Global negative conditioning for classifier-free guidance.",
+            "multiline": true
+          }
+        ]
+      }
+    },
+    "outputs": [
+      "CONDITIONING",
+      "CONDITIONING",
+      "STRING",
+      "ANIMA_SCENE_POLICY"
+    ],
+    "function": "make",
+    "category": "Anima Contact/Conditioning",
+    "display_name": "Anima Scene Conditioning",
+    "description": "Encode shared scene, global style and negative conditioning.",
+    "output_names": [
+      "positive",
+      "negative",
+      "scene_text",
+      "scene_policy"
+    ]
+  },
+  "AnimaIdentity": {
+    "inputs": {
+      "required": {
+        "clip": [
+          "CLIP",
+          {
+            "tooltip": "Anima-compatible text encoder used to encode shared and regional conditioning."
+          }
+        ],
+        "layout": [
+          "ANIMA_LAYOUT",
+          {
+            "tooltip": "Spatial ownership masks, region identifiers and contact boundaries."
+          }
+        ],
+        "scene_text": [
+          "STRING",
+          {
+            "forceInput": true,
+            "tooltip": "Shared semantic context encoded together with each identity description."
+          }
+        ],
+        "char_id": [
+          [
+            "char1",
+            "char2",
+            "char3",
+            "char4",
+            "char5",
+            "char6",
+            "char7",
+            "char8",
+            "char9",
+            "char10",
+            "char11",
+            "char12",
+            "char13",
+            "char14",
+            "char15",
+            "char16"
+          ],
+          {
+            "tooltip": "Identifier linking an identity conditioning branch to an ownership region; independent of display names."
+          }
+        ],
+        "identity_prompt": [
+          "STRING",
+          {
+            "default": "",
+            "tooltip": "Appearance, clothing and distinguishing attributes for one regional conditioning branch.",
+            "multiline": true
+          }
+        ],
+        "edge_softness": [
+          "INT",
+          {
+            "default": 0,
+            "tooltip": "Smoothing radius of ownership gates in model image tokens; larger values reduce edge specificity.",
+            "min": 0,
+            "max": 6
+          }
+        ],
+        "identity_gain": [
+          "FLOAT",
+          {
+            "default": 1.0,
+            "tooltip": "Multiplier for this identity's conditioning residual, independent of LoRA scale.",
+            "min": 0,
+            "max": 1.5,
+            "step": 0.05
+          }
+        ],
+        "self_q_out_gain": [
+          "FLOAT",
+          {
+            "default": 1.0,
+            "tooltip": "Multiplier for local LoRA increments on self-attention query and output projections.",
+            "min": 0,
+            "max": 2,
+            "step": 0.05
+          }
+        ],
+        "self_kv_gain": [
+          "FLOAT",
+          {
+            "default": 1.0,
+            "tooltip": "Multiplier for local LoRA increments on self-attention key and value projections.",
+            "min": 0,
+            "max": 2,
+            "step": 0.05
+          }
+        ],
+        "cross_gain": [
+          "FLOAT",
+          {
+            "default": 1.0,
+            "tooltip": "Per-identity multiplier for supported cross-attention LoRA increments.",
+            "min": 0,
+            "max": 2,
+            "step": 0.05
+          }
+        ],
+        "mlp_gain": [
+          "FLOAT",
+          {
+            "default": 1.0,
+            "tooltip": "Multiplier for local LoRA increments on supported feed-forward projections.",
+            "min": 0,
+            "max": 2,
+            "step": 0.05
+          }
+        ],
+        "lora_stack_json": [
+          "STRING",
+          {
+            "default": "{\"version\":1,\"entries\":[]}",
+            "tooltip": "Serialized local MODEL adapters with independent enable state and scale; an empty stack uses the base model.",
+            "multiline": true
+          }
+        ]
+      },
+      "optional": {
+        "previous_roles": [
+          "ANIMA_IDENTITIES",
+          {
+            "tooltip": "Optional identity chain extended by this node."
+          }
+        ],
+        "scene_policy": [
+          "ANIMA_SCENE_POLICY",
+          {
+            "tooltip": "Shared unstyled reference conditioning used to compute identity residuals consistently."
+          }
+        ]
+      }
+    },
+    "outputs": [
+      "ANIMA_IDENTITIES"
+    ],
+    "function": "make",
+    "category": "Anima Contact/Conditioning",
+    "display_name": "Anima Identity",
+    "description": "Bind regional text and optional local MODEL adapters to one ownership identifier.",
+    "output_names": [
+      "roles"
+    ]
+  },
+  "AnimaRegionalApply": {
+    "inputs": {
+      "required": {
+        "model": [
+          "MODEL",
+          {
+            "tooltip": "Unmodified source diffusion model used to construct a regional sampling pipeline."
+          }
+        ],
+        "layout": [
+          "ANIMA_LAYOUT",
+          {
+            "tooltip": "Spatial ownership masks, region identifiers and contact boundaries."
+          }
+        ],
+        "identity_strength": [
+          "FLOAT",
+          {
+            "default": 1.0,
+            "tooltip": "Global scale of regional text residuals relative to the shared conditioning baseline.",
+            "min": 0,
+            "max": 1,
+            "step": 0.05
+          }
+        ],
+        "cross_lora_strength": [
+          "FLOAT",
+          {
+            "default": 1.0,
+            "tooltip": "Global scale of cross-attention adapter residuals; does not scale identity text residuals.",
+            "min": 0,
+            "max": 1.5,
+            "step": 0.05
+          }
+        ],
+        "self_kv_mode": [
+          [
+            "regional",
+            "base"
+          ],
+          {
+            "tooltip": "Whether regional adapters affect self-attention key and value projections."
+          }
+        ],
+        "overlap_mode": [
+          [
+            "nearest",
+            "soft"
+          ],
+          {
+            "tooltip": "Policy used to allocate tokens covered by multiple ownership regions."
+          }
+        ],
+        "contact_lora_release": [
+          "FLOAT",
+          {
+            "default": 0.0,
+            "tooltip": "Fraction of adapter influence removed inside contact boundaries; identity text remains active.",
+            "min": 0,
+            "max": 1,
+            "step": 0.05
+          }
+        ],
+        "adaptive_mode": [
+          [
+            "off",
+            "refine"
+          ],
+          {
+            "tooltip": "Optional attention-based ownership refinement; requires explicit spatial priors."
+          }
+        ],
+        "adaptive_calls": [
+          "INT",
+          {
+            "default": 2,
+            "tooltip": "Number of initial model forward calls used for adaptive ownership observations.",
+            "min": 1,
+            "max": 8
+          }
+        ],
+        "adaptive_blend": [
+          "FLOAT",
+          {
+            "default": 0.25,
+            "tooltip": "Interpolation weight between observed affinity and the supplied ownership prior.",
+            "min": 0,
+            "max": 1,
+            "step": 0.05
+          }
+        ],
+        "self_attention_mode": [
+          [
+            "local_output",
+            "shared_projection"
+          ],
+          {
+            "tooltip": "Local output residual routing or shared projection routing for regional adapters."
+          }
+        ],
+        "cfg_lora_mode": [
+          [
+            "both",
+            "positive_only"
+          ],
+          {
+            "tooltip": "Applies adapters to both guidance branches or only the conditional branch; negative text is not replaced."
+          }
+        ],
+        "gate_mode": [
+          [
+            "partition",
+            "legacy"
+          ],
+          {
+            "tooltip": "Partition gates preserve covered-token magnitude after exclusive ownership allocation."
+          }
+        ],
+        "self_region_isolation": [
+          "FLOAT",
+          {
+            "default": 0.0,
+            "min": 0.0,
+            "max": 1.0,
+            "step": 0.05,
+            "tooltip": "Experimental suppression of attention between different identity regions; zero preserves native attention."
+          }
+        ],
+        "isolation_start_layer": [
+          "FLOAT",
+          {
+            "default": 0.5,
+            "min": 0.0,
+            "max": 1.0,
+            "step": 0.05,
+            "tooltip": "Fractional transformer depth after which spatial self-attention isolation is applied."
+          }
+        ]
+      },
+      "optional": {
+        "roles": [
+          "ANIMA_IDENTITIES",
+          {
+            "tooltip": "Active identity branches assigned to this sampling pipeline."
+          }
+        ]
+      }
+    },
+    "outputs": [
+      "MODEL",
+      "ANIMA_PIPELINE",
+      "STRING"
+    ],
+    "function": "apply",
+    "category": "Anima Contact/Routing",
+    "display_name": "Anima Regional Apply",
+    "description": "Build spatial text and adapter residual routing while retaining the shared model baseline.",
+    "output_names": [
+      "model",
+      "pipeline",
+      "report"
+    ]
+  },
+  "AnimaPersonDetect": {
+    "inputs": {
+      "required": {
+        "image": [
+          "IMAGE",
+          {
+            "tooltip": "Single RGB image used as the spatial or segmentation reference."
+          }
+        ],
+        "detector": [
+          [
+            "person_detect_v1.3_s.onnx",
+            "person_detect_v1.1_m.onnx"
+          ],
+          {
+            "tooltip": "Anime person detector filename in the registered model directory."
+          }
+        ],
+        "expected_people": [
+          "INT",
+          {
+            "default": 0,
+            "tooltip": "Zero accepts the detected count; a positive value verifies the count before segmentation.",
+            "min": 0,
+            "max": 16
+          }
+        ],
+        "confidence": [
+          "FLOAT",
+          {
+            "default": 0.3,
+            "tooltip": "Minimum person detection confidence accepted before non-maximum suppression.",
+            "min": 0.05,
+            "max": 0.95,
+            "step": 0.05
+          }
+        ],
+        "nms_iou": [
+          "FLOAT",
+          {
+            "default": 0.75,
+            "tooltip": "Intersection-over-union threshold for suppressing duplicate person boxes.",
+            "min": 0.1,
+            "max": 0.95,
+            "step": 0.05
+          }
+        ],
+        "resolution": [
+          "INT",
+          {
+            "default": 640,
+            "tooltip": "Input spatial resolution used by dynamically shaped detection models.",
+            "min": 320,
+            "max": 1536,
+            "step": 32
+          }
+        ]
+      },
+      "optional": {
+        "auto_download": [
+          "BOOLEAN",
+          {
+            "default": true,
+            "tooltip": "Download missing catalogued weights on execution, verify SHA256 and install atomically."
+          }
+        ]
+      }
+    },
+    "outputs": [
+      "ANIMA_PEOPLE",
+      "IMAGE",
+      "INT",
+      "STRING"
+    ],
+    "function": "detect",
+    "category": "Anima Contact/Segmentation",
+    "display_name": "Anima Person Detection",
+    "description": "Detect anime person instances and assign deterministic spatial identifiers.",
+    "output_names": [
+      "people",
+      "preview",
+      "count",
+      "report"
+    ]
+  },
+  "AnimaPersonSegment": {
+    "inputs": {
+      "required": {
+        "image": [
+          "IMAGE",
+          {
+            "tooltip": "Single RGB image used as the spatial or segmentation reference."
+          }
+        ],
+        "people": [
+          "ANIMA_PEOPLE",
+          {
+            "tooltip": "Validated detection boxes and their source image association."
+          }
+        ],
+        "sam2_checkpoint": [
+          [
+            "sam2.1_hiera_tiny.pt"
+          ],
+          {
+            "tooltip": "Official SAM2.1 checkpoint filename matching the registered model configuration."
+          }
+        ],
+        "canvas_width": [
+          "INT",
+          {
+            "default": 1024,
+            "tooltip": "Target image width in pixels; must be divisible by 16.",
+            "min": 64,
+            "max": 16192,
+            "step": 16
+          }
+        ],
+        "canvas_height": [
+          "INT",
+          {
+            "default": 1024,
+            "tooltip": "Target image height in pixels; must be divisible by 16.",
+            "min": 64,
+            "max": 16192,
+            "step": 16
+          }
+        ],
+        "analysis_resolution": [
+          "INT",
+          {
+            "default": 512,
+            "tooltip": "Longest side used for instance segmentation and edge-aware ownership allocation.",
+            "min": 256,
+            "max": 1024,
+            "step": 64
+          }
+        ],
+        "contact_width": [
+          "INT",
+          {
+            "default": 10,
+            "tooltip": "Radius in target pixels used to mark adjacent identity boundaries.",
+            "min": 0,
+            "max": 64
+          }
+        ]
+      },
+      "optional": {
+        "manual_seeds": [
+          "ANIMA_SEEDS",
+          {
+            "tooltip": "Optional positive identity and background annotations constraining instance segmentation."
+          }
+        ],
+        "refinement": [
+          [
+            "off",
+            "mask_refine"
+          ],
+          {
+            "tooltip": "Optional second SAM2 prediction conditioned on the selected low-resolution mask logits."
+          }
+        ],
+        "foreground_mask": [
+          "MASK",
+          {
+            "tooltip": "Optional union foreground probability map used to recover missing pixels without defining instance identity."
+          }
+        ],
+        "auto_download": [
+          "BOOLEAN",
+          {
+            "default": true,
+            "tooltip": "Download missing catalogued weights on execution, verify SHA256 and install atomically."
+          }
+        ]
+      }
+    },
+    "outputs": [
+      "ANIMA_LAYOUT",
+      "IMAGE",
+      "IMAGE",
+      "INT",
+      "INT",
+      "STRING"
+    ],
+    "function": "analyze",
+    "category": "Anima Contact/Segmentation",
+    "display_name": "Anima Instance Segmentation",
+    "description": "Combine detection boxes, SAM2 and optional foreground priors to allocate visible pixels.",
+    "output_names": [
+      "layout",
+      "preview",
+      "identity_map",
+      "width",
+      "height",
+      "report"
+    ]
+  },
+  "AnimaOwnershipEditor": {
+    "inputs": {
+      "required": {
+        "layout": [
+          "ANIMA_LAYOUT",
+          {
+            "tooltip": "Spatial ownership masks, region identifiers and contact boundaries."
+          }
+        ],
+        "strokes_json": [
+          "STRING",
+          {
+            "default": "{\"version\":1,\"strokes\":[]}",
+            "tooltip": "Serialized normalized brush strokes bound to the current reference layout.",
+            "multiline": true
+          }
+        ],
+        "island_pixels": [
+          "INT",
+          {
+            "default": 24,
+            "tooltip": "Maximum component area removed as isolated noise; each identity's largest component is retained.",
+            "min": 0,
+            "max": 4096
+          }
+        ],
+        "hole_pixels": [
+          "INT",
+          {
+            "default": 256,
+            "tooltip": "Maximum enclosed background area filled when the surrounding identity is sufficiently unambiguous.",
+            "min": 0,
+            "max": 4096
+          }
+        ],
+        "smooth_radius": [
+          "FLOAT",
+          {
+            "default": 0.6,
+            "tooltip": "Gaussian competition radius in target pixels for mutually exclusive identity labels.",
+            "min": 0,
+            "max": 4,
+            "step": 0.1
+          }
+        ],
+        "identity_names_json": [
+          "STRING",
+          {
+            "default": "{}",
+            "tooltip": "Optional region identifier to display-name mapping; labels do not alter spatial ownership.",
+            "multiline": true
+          }
+        ]
+      }
+    },
+    "outputs": [
+      "ANIMA_LAYOUT",
+      "IMAGE",
+      "IMAGE",
+      "STRING",
+      "INT",
+      "INT"
+    ],
+    "function": "paint",
+    "category": "Anima Contact/Masks",
+    "display_name": "Anima Ownership Editor",
+    "description": "Clean discrete ownership labels and edit identity assignment with persistent strokes.",
+    "output_names": [
+      "layout",
+      "preview",
+      "identity_map",
+      "report",
+      "width",
+      "height"
+    ]
+  },
+  "AnimaIdentityMapImport": {
+    "inputs": {
+      "required": {
+        "id_image": [
+          "IMAGE",
+          {
+            "tooltip": "Discrete ownership map encoded with the documented identity palette; background is black or white."
+          }
+        ],
+        "canvas_width": [
+          "INT",
+          {
+            "default": 1024,
+            "tooltip": "Target image width in pixels; must be divisible by 16.",
+            "min": 64,
+            "max": 16192,
+            "step": 16
+          }
+        ],
+        "canvas_height": [
+          "INT",
+          {
+            "default": 1024,
+            "tooltip": "Target image height in pixels; must be divisible by 16.",
+            "min": 64,
+            "max": 16192,
+            "step": 16
+          }
+        ],
+        "expected_people": [
+          "INT",
+          {
+            "default": 2,
+            "tooltip": "Number of identity palette entries expected in the imported map.",
+            "min": 1,
+            "max": 16
+          }
+        ],
+        "contact_width": [
+          "INT",
+          {
+            "default": 10,
+            "tooltip": "Radius in target pixels used to mark adjacent identity boundaries.",
+            "min": 0,
+            "max": 64
+          }
+        ]
+      },
+      "optional": {
+        "reference": [
+          "IMAGE",
+          {
+            "tooltip": "Optional RGB reference associated with the imported ownership map."
+          }
+        ]
+      }
+    },
+    "outputs": [
+      "ANIMA_LAYOUT",
+      "IMAGE",
+      "INT",
+      "INT"
+    ],
+    "function": "load",
+    "category": "Anima Contact/Masks",
+    "display_name": "Anima Identity Map Import",
+    "description": "Import palette-encoded identity labels as a spatial ownership layout.",
+    "output_names": [
+      "layout",
+      "identity_map",
+      "width",
+      "height"
+    ]
+  },
+  "AnimaIdentitySeeds": {
+    "inputs": {
+      "required": {
+        "image": [
+          "IMAGE",
+          {
+            "tooltip": "Single RGB image used as the spatial or segmentation reference."
+          }
+        ],
+        "canvas_width": [
+          "INT",
+          {
+            "default": 1024,
+            "tooltip": "Target image width in pixels; must be divisible by 16.",
+            "min": 64,
+            "max": 16192,
+            "step": 16
+          }
+        ],
+        "canvas_height": [
+          "INT",
+          {
+            "default": 1024,
+            "tooltip": "Target image height in pixels; must be divisible by 16.",
+            "min": 64,
+            "max": 16192,
+            "step": 16
+          }
+        ],
+        "expected_people": [
+          "INT",
+          {
+            "default": 2,
+            "tooltip": "Zero accepts the detected count; a positive value verifies the count before segmentation.",
+            "min": 1,
+            "max": 16
+          }
+        ],
+        "strokes_json": [
+          "STRING",
+          {
+            "default": "{\"version\":1,\"strokes\":[]}",
+            "tooltip": "Serialized normalized brush strokes bound to the current reference layout.",
+            "multiline": true
+          }
+        ]
+      }
+    },
+    "outputs": [
+      "ANIMA_SEEDS",
+      "IMAGE",
+      "INT",
+      "INT",
+      "STRING"
+    ],
+    "function": "prepare",
+    "category": "Anima Contact/Masks",
+    "display_name": "Anima Identity Seeds",
+    "description": "Annotate positive identity seeds and background exclusions.",
+    "output_names": [
+      "seeds",
+      "preview",
+      "width",
+      "height",
+      "report"
+    ]
+  },
+  "AnimaSeedSegment": {
+    "inputs": {
+      "required": {
+        "image": [
+          "IMAGE",
+          {
+            "tooltip": "Single RGB image used as the spatial or segmentation reference."
+          }
+        ],
+        "seeds": [
+          "ANIMA_SEEDS",
+          {
+            "tooltip": "Per-identity positive labels and optional background exclusions tied to one reference."
+          }
+        ],
+        "sam2_checkpoint": [
+          [
+            "sam2.1_hiera_tiny.pt"
+          ],
+          {
+            "tooltip": "Official SAM2.1 checkpoint filename matching the registered model configuration."
+          }
+        ],
+        "analysis_resolution": [
+          "INT",
+          {
+            "default": 512,
+            "tooltip": "Longest side used for instance segmentation and edge-aware ownership allocation.",
+            "min": 256,
+            "max": 1024,
+            "step": 64
+          }
+        ],
+        "contact_width": [
+          "INT",
+          {
+            "default": 10,
+            "tooltip": "Radius in target pixels used to mark adjacent identity boundaries.",
+            "min": 0,
+            "max": 64
+          }
+        ]
+      },
+      "optional": {
+        "auto_download": [
+          "BOOLEAN",
+          {
+            "default": true,
+            "tooltip": "Download missing catalogued weights on execution, verify SHA256 and install atomically."
+          }
+        ]
+      }
+    },
+    "outputs": [
+      "ANIMA_LAYOUT",
+      "IMAGE",
+      "IMAGE",
+      "INT",
+      "INT",
+      "STRING"
+    ],
+    "function": "analyze",
+    "category": "Anima Contact/Segmentation",
+    "display_name": "Anima Seed Segmentation",
+    "description": "Allocate instance ownership using SAM2 and explicit identity seeds.",
+    "output_names": [
+      "layout",
+      "preview",
+      "identity_map",
+      "width",
+      "height",
+      "report"
+    ]
+  },
+  "AnimaLayoutControl": {
+    "inputs": {
+      "required": {
+        "layout": [
+          "ANIMA_LAYOUT",
+          {
+            "tooltip": "Spatial ownership masks, region identifiers and contact boundaries."
+          }
+        ],
+        "mode": [
+          [
+            "outline",
+            "region_color"
+          ],
+          {
+            "tooltip": "Outline or identity-color representation generated from ownership labels."
+          }
+        ],
+        "smooth_pixels": [
+          "INT",
+          {
+            "default": 2,
+            "tooltip": "Pixel radius used to smooth discrete ownership boundaries before extracting control geometry.",
+            "min": 0,
+            "max": 16
+          }
+        ],
+        "line_width": [
+          "INT",
+          {
+            "default": 3,
+            "tooltip": "Width in output pixels of the extracted outline representation.",
+            "min": 1,
+            "max": 12
+          }
+        ],
+        "effect_margin": [
+          "INT",
+          {
+            "default": 16,
+            "tooltip": "Pixel dilation of the foreground control-effect mask.",
+            "min": 0,
+            "max": 128
+          }
+        ]
+      },
+      "optional": {
+        "release_mask": [
+          "MASK",
+          {
+            "tooltip": "White pixels suppress structural control locally without changing identity ownership."
+          }
+        ]
+      }
+    },
+    "outputs": [
+      "IMAGE",
+      "MASK"
+    ],
+    "function": "make",
+    "category": "Anima Contact/Control",
+    "display_name": "Anima Layout Control Image",
+    "description": "Extract structural control images and effect masks from ownership labels.",
+    "output_names": [
+      "control_image",
+      "effect_mask"
+    ]
+  },
+  "AnimaContactLLLiteApply": {
+    "inputs": {
+      "required": {
+        "pipeline": [
+          "ANIMA_PIPELINE",
+          {
+            "tooltip": "Source model, identities, ownership layout and runtime settings for one sampling stage."
+          }
+        ],
+        "control": [
+          "ANIMA_LLLITE",
+          {
+            "tooltip": "Loaded Anima LLLite weights matching the supplied control representation."
+          }
+        ],
+        "image": [
+          "IMAGE",
+          {
+            "tooltip": "Single RGB image used as the spatial or segmentation reference."
+          }
+        ],
+        "strength": [
+          "FLOAT",
+          {
+            "default": 0.65,
+            "tooltip": "Scale of the structural control residual during its active diffusion interval.",
+            "min": 0,
+            "max": 2,
+            "step": 0.05
+          }
+        ],
+        "start_percent": [
+          "FLOAT",
+          {
+            "default": 0.0,
+            "tooltip": "Start position on the model's full diffusion schedule.",
+            "min": 0,
+            "max": 1,
+            "step": 0.05
+          }
+        ],
+        "end_percent": [
+          "FLOAT",
+          {
+            "default": 0.55,
+            "tooltip": "End position on the model's full diffusion schedule.",
+            "min": 0,
+            "max": 1,
+            "step": 0.05
+          }
+        ],
+        "fade_out": [
+          "FLOAT",
+          {
+            "default": 0.15,
+            "tooltip": "Length of the terminal schedule interval over which control strength decreases to zero.",
+            "min": 0,
+            "max": 1,
+            "step": 0.05
+          }
+        ],
+        "second_pass_strength": [
+          "FLOAT",
+          {
+            "default": 0.0,
+            "tooltip": "Explicit control strength retained when rebuilding a later sampling stage.",
+            "min": 0,
+            "max": 2,
+            "step": 0.05
+          }
+        ]
+      },
+      "optional": {
+        "effect_mask": [
+          "MASK",
+          {
+            "tooltip": "White preserves structural control and black disables it; independent of identity gates."
+          }
+        ]
+      }
+    },
+    "outputs": [
+      "MODEL",
+      "ANIMA_PIPELINE",
+      "STRING"
+    ],
+    "function": "apply",
+    "category": "Anima Contact/Control",
+    "display_name": "Anima Regional LLLite Apply",
+    "description": "Apply scheduled structural residuals to a regional pipeline.",
+    "output_names": [
+      "model",
+      "pipeline",
+      "report"
+    ]
+  },
+  "AnimaTileUpscale": {
+    "inputs": {
+      "required": {
+        "pipeline": [
+          "ANIMA_PIPELINE",
+          {
+            "tooltip": "Source model, identities, ownership layout and runtime settings for one sampling stage."
+          }
+        ],
+        "samples": [
+          "LATENT",
+          {
+            "tooltip": "Latent samples produced by the sampling stage associated with the supplied pipeline."
+          }
+        ],
+        "vae": [
+          "VAE",
+          {
+            "tooltip": "Compatible encoder and decoder used for pixel-space resizing and latent reconstruction."
+          }
+        ],
+        "tile_control": [
+          "ANIMA_LLLITE",
+          {
+            "tooltip": "Anima TileRepair control weights used with generated RGB content."
+          }
+        ],
+        "scale_factor": [
+          "FLOAT",
+          {
+            "default": 1.5,
+            "tooltip": "Spatial image scale with target dimensions aligned to the model patch grid.",
+            "min": 1,
+            "max": 4,
+            "step": 0.05
+          }
+        ],
+        "tile_strength": [
+          "FLOAT",
+          {
+            "default": 0.8,
+            "tooltip": "Residual control scale for the generated-image Tile conditioning.",
+            "min": 0,
+            "max": 2,
+            "step": 0.05
+          }
+        ],
+        "start_percent": [
+          "FLOAT",
+          {
+            "default": 0.0,
+            "tooltip": "Start position on the model's full diffusion schedule.",
+            "min": 0,
+            "max": 1,
+            "step": 0.05
+          }
+        ],
+        "end_percent": [
+          "FLOAT",
+          {
+            "default": 1.0,
+            "tooltip": "End position on the model's full diffusion schedule.",
+            "min": 0,
+            "max": 1,
+            "step": 0.05
+          }
+        ]
+      }
+    },
+    "outputs": [
+      "MODEL",
+      "LATENT",
+      "ANIMA_PIPELINE",
+      "IMAGE",
+      "INT",
+      "INT",
+      "STRING"
+    ],
+    "function": "prepare",
+    "category": "Anima Contact/Sampling",
+    "display_name": "Anima Tile Upscale",
+    "description": "Resize generated RGB content, re-encode latents and prepare Tile-guided refinement.",
+    "output_names": [
+      "model",
+      "samples",
+      "pipeline",
+      "control_image",
+      "width",
+      "height",
+      "report"
+    ]
+  },
+  "AnimaRegionalInspect": {
+    "inputs": {
+      "required": {
+        "pipeline": [
+          "ANIMA_PIPELINE",
+          {
+            "tooltip": "Source model, identities, ownership layout and runtime settings for one sampling stage."
+          }
+        ],
+        "samples": [
+          "LATENT",
+          {
+            "tooltip": "Latent samples produced by the sampling stage associated with the supplied pipeline."
+          }
+        ]
+      },
+      "optional": {
+        "image": [
+          "IMAGE",
+          {
+            "tooltip": "Single RGB image used as the spatial or segmentation reference."
+          }
+        ]
+      }
+    },
+    "outputs": [
+      "IMAGE",
+      "STRING"
+    ],
+    "function": "inspect",
+    "category": "Anima Contact/Diagnostics",
+    "display_name": "Anima Regional Inspection",
+    "description": "Inspect spatial gates and runtime adapter activity after sampling.",
+    "output_names": [
+      "preview",
+      "report"
+    ]
+  },
+  "AnimaForeground": {
+    "inputs": {
+      "required": {
+        "image": [
+          "IMAGE",
+          {
+            "tooltip": "Single RGB image used as the spatial or segmentation reference."
+          }
+        ],
+        "backend": [
+          [
+            "isnet",
+            "toonout",
+            "ensemble"
+          ],
+          {
+            "tooltip": "Foreground model or model ensemble; produces a union mask without instance identifiers."
+          }
+        ],
+        "auto_download": [
+          "BOOLEAN",
+          {
+            "default": true,
+            "tooltip": "Download missing catalogued weights on execution, verify SHA256 and install atomically."
+          }
+        ],
+        "fusion": [
+          [
+            "consensus",
+            "coverage"
+          ],
+          {
+            "tooltip": "Consensus uses geometric mean; coverage uses maximum; intersection uses minimum probability."
+          }
+        ]
+      }
+    },
+    "outputs": [
+      "MASK",
+      "IMAGE",
+      "STRING"
+    ],
+    "function": "segment",
+    "category": "Anima Contact/Segmentation",
+    "display_name": "Anima Foreground Segmentation",
+    "description": "Predict union foreground using ISNet, ToonOut or a probability ensemble.",
+    "output_names": [
+      "foreground_mask",
+      "preview",
+      "report"
+    ]
+  },
+  "AnimaMaskCombine": {
+    "inputs": {
+      "required": {
+        "mask_a": [
+          "MASK",
+          {
+            "tooltip": "First foreground probability mask in the range zero to one."
+          }
+        ],
+        "mask_b": [
+          "MASK",
+          {
+            "tooltip": "Second foreground probability mask; resized to the first mask before fusion."
+          }
+        ],
+        "fusion": [
+          [
+            "consensus",
+            "coverage",
+            "intersection"
+          ],
+          {
+            "tooltip": "Consensus uses geometric mean; coverage uses maximum; intersection uses minimum probability."
+          }
+        ]
+      }
+    },
+    "outputs": [
+      "MASK"
+    ],
+    "function": "combine",
+    "category": "Anima Contact/Masks",
+    "display_name": "Anima Mask Combine",
+    "description": "Fuse aligned foreground probability masks from independent segmentation models.",
+    "output_names": [
+      "foreground_mask"
+    ]
+  },
+  "AnimaLLLiteLoader": {
+    "inputs": {
+      "required": {
+        "model_name": [
+          [
+            "outline",
+            "regional",
+            "tile"
+          ],
+          {
+            "tooltip": "Catalogued model with a fixed source revision, installation directory and SHA256 checksum."
+          }
+        ],
+        "auto_download": [
+          "BOOLEAN",
+          {
+            "default": true,
+            "tooltip": "Download missing catalogued weights on execution, verify SHA256 and install atomically."
+          }
+        ]
+      }
+    },
+    "outputs": [
+      "ANIMA_LLLITE",
+      "STRING"
+    ],
+    "function": "load",
+    "category": "Anima Contact/Models",
+    "display_name": "Anima LLLite Loader",
+    "description": "Load validated Anima structural or Tile control weights.",
+    "output_names": [
+      "control",
+      "report"
+    ]
+  },
+  "AnimaModelDownload": {
+    "inputs": {
+      "required": {
+        "model_name": [
+          [
+            "isnet",
+            "toonout",
+            "detector-small",
+            "detector-medium",
+            "sam2-tiny",
+            "outline",
+            "regional",
+            "tile",
+            "sam3"
+          ],
+          {
+            "tooltip": "Catalogued model with a fixed source revision, installation directory and SHA256 checksum."
+          }
+        ]
+      }
+    },
+    "outputs": [
+      "STRING"
+    ],
+    "function": "download",
+    "category": "Anima Contact/Models",
+    "display_name": "Anima Model Download",
+    "description": "Install a catalogued model with fixed-revision integrity verification.",
+    "output_names": [
+      "path"
+    ]
+  },
+  "AnimaContactSAM3Segment": {
+    "inputs": {
+      "required": {
+        "image": [
+          "IMAGE",
+          {
+            "tooltip": "Single RGB image to segment with concept prompts."
+          }
+        ],
+        "semantic_mode": [
+          [
+            "automatic",
+            "custom"
+          ],
+          {
+            "tooltip": "Automatic probes person, girl and boy concepts and deduplicates instance masks. Custom uses the supplied phrases. This is concept probing, not automatic caption generation.",
+            "default": "automatic"
+          }
+        ],
+        "semantic_text": [
+          "STRING",
+          {
+            "tooltip": "One concise concept phrase per line, used in custom mode. Each phrase can return multiple instances.",
+            "multiline": true,
+            "default": ""
+          }
+        ],
+        "expected_people": [
+          "INT",
+          {
+            "tooltip": "Zero accepts the result count. A positive count checks all returned instances without fabricating or truncating objects.",
+            "min": 0,
+            "max": 16,
+            "step": 1,
+            "default": 0
+          }
+        ],
+        "confidence": [
+          "FLOAT",
+          {
+            "tooltip": "Minimum instance confidence after the SAM3 presence and detection score calculation.",
+            "min": 0.05,
+            "max": 0.95,
+            "step": 0.05,
+            "default": 0.5
+          }
+        ],
+        "mask_threshold": [
+          "FLOAT",
+          {
+            "tooltip": "Foreground probability cutoff used by the official instance postprocessor.",
+            "min": 0.05,
+            "max": 0.95,
+            "step": 0.05,
+            "default": 0.5
+          }
+        ],
+        "nms_iou": [
+          "FLOAT",
+          {
+            "tooltip": "Mask IoU threshold for suppressing duplicate instances across concept queries. Larger values preserve more overlapping objects.",
+            "min": 0.5,
+            "max": 0.99,
+            "step": 0.01,
+            "default": 0.85
+          }
+        ],
+        "minimum_pixels": [
+          "INT",
+          {
+            "tooltip": "Discard instance masks smaller than this number of source-image pixels.",
+            "min": 1,
+            "max": 100000,
+            "step": 1,
+            "default": 24
+          }
+        ],
+        "canvas_width": [
+          "INT",
+          {
+            "tooltip": "Target layout width in pixels; divisible by 16. Match the reference aspect ratio to avoid distortion.",
+            "min": 64,
+            "max": 16192,
+            "step": 16,
+            "default": 1024
+          }
+        ],
+        "canvas_height": [
+          "INT",
+          {
+            "tooltip": "Target layout height in pixels; divisible by 16.",
+            "min": 64,
+            "max": 16192,
+            "step": 16,
+            "default": 1024
+          }
+        ],
+        "contact_width": [
+          "INT",
+          {
+            "tooltip": "Boundary contact radius in target pixels; does not change the predicted instance silhouette.",
+            "min": 0,
+            "max": 64,
+            "step": 1,
+            "default": 8
+          }
+        ],
+        "device": [
+          [
+            "auto",
+            "cuda",
+            "cpu"
+          ],
+          {
+            "tooltip": "Auto follows the ComfyUI device when available. CPU uses float32; CUDA uses float16. The model is released after inference.",
+            "default": "auto"
+          }
+        ],
+        "auto_download": [
+          "BOOLEAN",
+          {
+            "tooltip": "Download fixed-revision Transformers weights and configuration from the public bodhicitta/sam3 repository, with upstream-matching integrity checks. No Hugging Face login is required.",
+            "default": true
+          }
+        ]
+      }
+    },
+    "outputs": [
+      "ANIMA_LAYOUT",
+      "IMAGE",
+      "IMAGE",
+      "MASK",
+      "INT",
+      "STRING"
+    ],
+    "output_names": [
+      "layout",
+      "overlay",
+      "identity_map",
+      "foreground",
+      "count",
+      "report"
+    ],
+    "function": "segment",
+    "category": "Anima Contact/Segmentation",
+    "display_name": "Anima SAM3 Semantic Segmentation",
+    "description": "Segment all matching instances with SAM3 concept prompts. Preserve predicted masks, deduplicate queries and assign stable spatial ownership identifiers."
+  },
+  "AnimaContactForegroundOwnership": {
+    "inputs": {
+      "required": {
+        "image": [
+          "IMAGE",
+          {
+            "tooltip": "Single RGB reference associated with the foreground mask and identity seeds."
+          }
+        ],
+        "foreground_mask": [
+          "MASK",
+          {
+            "tooltip": "Foreground probability map. It contains subject coverage without per-person identity labels."
+          }
+        ],
+        "seeds": [
+          "ANIMA_SEEDS",
+          {
+            "tooltip": "Positive identity and optional background annotations from the same reference and canvas."
+          }
+        ],
+        "analysis_resolution": [
+          "INT",
+          {
+            "default": 768,
+            "min": 256,
+            "max": 1024,
+            "step": 64,
+            "tooltip": "Longest analysis edge. Larger values preserve finer mask geometry at greater CPU and memory cost."
+          }
+        ],
+        "mask_threshold": [
+          "FLOAT",
+          {
+            "default": 0.5,
+            "min": 0.05,
+            "max": 0.95,
+            "step": 0.05,
+            "tooltip": "Probability cutoff for foreground allocation. Explicit identity seeds remain protected."
+          }
+        ],
+        "edge_weight": [
+          "FLOAT",
+          {
+            "default": 12.0,
+            "min": 0.0,
+            "max": 40.0,
+            "step": 1.0,
+            "tooltip": "Geodesic cost multiplier for foreground-probability changes; RGB intensity edges also constrain propagation."
+          }
+        ],
+        "contact_width": [
+          "INT",
+          {
+            "default": 8,
+            "min": 0,
+            "max": 64,
+            "step": 1,
+            "tooltip": "Contact boundary radius in target-canvas pixels."
+          }
+        ]
+      }
+    },
+    "outputs": [
+      "ANIMA_LAYOUT",
+      "IMAGE",
+      "IMAGE",
+      "STRING"
+    ],
+    "output_names": [
+      "layout",
+      "overlay",
+      "identity_map",
+      "report"
+    ],
+    "function": "partition",
+    "category": "Anima Contact/Segmentation",
+    "display_name": "Anima Foreground Ownership",
+    "description": "Assign union foreground pixels to explicit identity seeds using image-edge geodesic distances. Does not load SAM or a person detector."
+  }
+}

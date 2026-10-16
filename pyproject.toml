@@ -1,0 +1,7 @@
+[project]
+name = "anima-contact-regional-lora"
+version = "1.1.1"
+description = "Spatial identity conditioning, local LoRA routing and structural control for Anima"
+license = {file = "LICENSE"}
+requires-python = ">=3.10"
+dependencies = ["numpy", "Pillow", "scipy", "onnxruntime", "safetensors"]

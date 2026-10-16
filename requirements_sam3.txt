@@ -1,0 +1,4 @@
+# 使用 ComfyUI 实际运行的 Python 安装；SAM3 依赖延迟导入。
+transformers>=5.0,<6
+huggingface_hub>=1.0
+socksio>=1.0

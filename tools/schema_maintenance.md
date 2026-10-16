@@ -1,0 +1,1 @@
+Maintain node_schema.json and locales/en/nodeDefs.json with locales/zh/nodeDefs.json together. Keep input keys stable and document mathematical behavior. Do not embed workflow-specific identities or instructions in parameter tooltips.
